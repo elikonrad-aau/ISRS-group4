@@ -8,9 +8,9 @@
   - [ ] Recommendations Page
 
 ## Logic
-- [ ] Dumb Baseline
+- [ ] Dumb Baseline (Algorithm 0)
   - [ ] kNN
-- [ ] Credits-based Function
+- [ ] Credits-based Function (Algorithm 1)
   - [ ] Actors Matrixs Persistence
   - [ ] Order
   - [ ] Crew
