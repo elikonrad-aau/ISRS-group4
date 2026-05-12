@@ -1,0 +1,15 @@
+To-Do for 19.05.2026
+- [ ] Poster Background Raster
+- [ ] Project Setup
+- [ ] Frontend Design
+  - [ ] Search Page
+  - [ ] Tags Page
+  - [ ] Recommendations Page
+- [ ] Baseline
+  - [ ] kNN
+- [ ] Credits-based Function
+  - [ ] Actors Matrixs Persistence
+  - [ ] Order
+  - [ ] Crew
+  - [ ] Order by ratings
+  - [ ] Ignore same collection
