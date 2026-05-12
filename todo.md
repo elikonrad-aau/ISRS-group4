@@ -1,11 +1,13 @@
-To-Do
+# To-Do
+## Frontend
 - [ ] Poster Background Raster
 - [ ] Project Setup
 - [ ] Frontend Design
   - [ ] Search Page
   - [ ] Tags Page (What did the user like about the movie)
   - [ ] Recommendations Page
-  
+
+## Logic
 - [ ] Dumb Baseline
   - [ ] kNN
 - [ ] Credits-based Function
