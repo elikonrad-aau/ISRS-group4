@@ -1,6 +1,27 @@
 # ISRS-group4
 Movie Recommendation
 
+
+## Setup
+1. Create .env file:
+```bash
+cp .env.example .env
+```
+
+2. Place the dataset files directly into:
+```text
+dataset/
+```
+
+3. Build Docker
+```bash
+docker compose up --build
+```
+```text
+http://127.0.0.1:8000
+```
+
+
 ## Function 0: Baseline
 
 ## Function 1: recommend_by_shared_cast_overlap
