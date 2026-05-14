@@ -1,6 +1,26 @@
 # ISRS-group4
 Movie Recommendation
 
+## Setup
+1. Create .env file:
+```bash
+cp .env.example .env
+```
+
+2. Place the dataset files directly into:
+```text
+dataset/
+```
+
+3. Build Docker
+```bash
+docker compose up --build
+```
+```text
+http://127.0.0.1:8000
+```
+
+
 ## 1. Function: recommend_by_community_taste_overlap
 Collaborative Filtering (User Behavior  and Taste Profile) -> Instead of looking at the movie metadata – looking for who liked the movie -> identify users who have LIKED or rated the reference movie highly and then recommend other movies those users liked.
 Steps:

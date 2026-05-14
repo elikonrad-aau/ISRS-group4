@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables
+.env
+
+# Django
+db.sqlite3
+media/
+
+# Static build output
+staticfiles/
+
+# Ignore dataset contents
+dataset/**
+!dataset/README.md
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+
+# Docker/Postgres
+postgres_data/
+
+# Node
+node_modules/
+
+# Sass cache
+.sass-cache/

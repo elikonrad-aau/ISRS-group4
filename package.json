@@ -1,0 +1,29 @@
+{
+  "name": "isrs-group4",
+  "version": "1.0.0",
+  "description": "Movie Recommendation",
+  "main": "index.js",
+  "scripts": {
+    "sass": "sass static/scss/main.scss static/css/main.css",
+    "sass:watch": "sass --watch static/scss/main.scss:static/css/main.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elikonrad-aau/ISRS-group4.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/elikonrad-aau/ISRS-group4/issues"
+  },
+  "homepage": "https://github.com/elikonrad-aau/ISRS-group4#readme",
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.8"
+  },
+  "devDependencies": {
+    "sass": "^1.99.0"
+  }
+}

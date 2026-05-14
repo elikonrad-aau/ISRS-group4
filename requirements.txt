@@ -1,0 +1,9 @@
+# Django Framework + Postgres
+Django==6.0.5
+psycopg2-binary
+
+# Python Packages
+pandas
+numpy
+
+

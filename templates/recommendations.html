@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <header class="fixed">
+        <nav class="navbar navbar-dark fixed-top py-4">
+            <div class="container d-flex justify-content-between align-items-center">
+
+                <!-- Back Button -->
+                <a href="/" class="btn btn-outline-light d-flex align-items-center gap-2">
+                    ← Back
+                </a>
+
+                <!-- Recommendation Details -->
+                <div class="text-light d-flex gap-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-light">Dataset:</span>
+                        <span class="fw-bold">ml-20m-psm</span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-light">User:</span>
+                        <span class="fw-bold">{{ user_id }}</span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-light">Neighbors:</span>
+                        <span class="fw-bold">{{ k }}</span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-light">Items:</span>
+                        <span class="fw-bold">{{ n }}</span>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+{% endblock %}
+
+
+{% block content %}
+    <div class="container mb-4">
+        <!-- Headline -->
+        <div class="row mb-4 pt-4">
+            <div class="col">
+                <h2 class="text-white">Top {{ n }} Recommendations for User {{ user_id }}</h2>
+            </div>
+        </div>
+
+        <!-- Strcuture for List -->
+        {% if movies %}
+            <div class="row g-4">
+                <!-- Recommendations (List) -->
+                {% for movie in movies %}
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <!-- Movie -->
+                        <div class="card h-100 shadow-sm movie-card" role="button" data-bs-toggle="modal"
+                             data-bs-target="#movieModal{{ forloop.counter }}">
+                            <!-- Image -->
+                            <figure class="movie-image">
+                                {% if movie.poster_url %}
+                                    <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}">
+                                {% else %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-disc no-image" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                        <path d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0M8 4a4 4 0 0 0-4 4 .5.5 0 0 1-1 0 5 5 0 0 1 5-5 .5.5 0 0 1 0 1m4.5 3.5a.5.5 0 0 1 .5.5 5 5 0 0 1-5 5 .5.5 0 0 1 0-1 4 4 0 0 0 4-4 .5.5 0 0 1 .5-.5"/>
+                                    </svg>
+                                {% endif %}
+                            </figure>
+                            <!-- Description -->
+                            <div class="card-body">
+                                <h5 class="card-title mb-2">{{ movie.title }}</h5>
+                                <p class="small text-muted mb-0">
+                                    <i class="bi bi-stars"></i>
+                                    {{ movie.predicted_rating|floatformat:2 }}
+                                    <span class="mx-2">|</span>
+
+                                    <i class="bi bi-star-fill"></i>
+                                    {{ movie.vote_average|floatformat:1 }}
+                                    <span class="mx-2">|</span>
+
+                                    <i class="bi bi-clock-fill"></i>
+                                    {{ movie.runtime|floatformat:0 }} min
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Movie Modal -->
+                    <div class="modal fade" id="movieModal{{ forloop.counter }}" tabindex="-1"
+                         aria-labelledby="movieModalLabel{{ forloop.counter }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <!-- Close Button -->
+                                <button type="button" class="modal-button btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                <!-- Modal Content -->
+                                <div class="modal-body">
+                                    <div class="row g-4">
+                                        <!-- Image -->
+                                        <div class="col-6">
+                                            <figure class="movie-image-full">
+                                                {% if movie.poster_url %}
+                                                    <img src="{{ movie.poster_url }}"
+                                                         alt="{{ movie.title }}">
+                                                {% else %}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                         fill="currentColor" class="bi bi-disc no-image" viewBox="0 0 16 16">
+                                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                                        <path d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0M8 4a4 4 0 0 0-4 4 .5.5 0 0 1-1 0 5 5 0 0 1 5-5 .5.5 0 0 1 0 1m4.5 3.5a.5.5 0 0 1 .5.5 5 5 0 0 1-5 5 .5.5 0 0 1 0-1 4 4 0 0 0 4-4 .5.5 0 0 1 .5-.5"/>
+                                                    </svg>
+                                                {% endif %}
+                                            </figure>
+                                        </div>
+                                        <!-- Content -->
+                                        <div class="col-6 modal-movie-content">
+                                            <h4 class="card-title mb-2">{{ movie.title }}</h4>
+
+                                            <p class="small text-muted mb-2">
+                                                <i class="bi bi-stars"></i>
+                                                {{ movie.predicted_rating|floatformat:2 }}
+                                                <span class="mx-2">|</span>
+
+                                                <i class="bi bi-star-fill"></i>
+                                                {{ movie.vote_average|floatformat:1 }}
+                                                <span class="mx-2">|</span>
+
+                                                <i class="bi bi-clock-fill"></i>
+                                                {{ movie.runtime|floatformat:0 }} min
+                                            </p>
+
+                                            {% if movie.tagline %}
+                                                <p class="fst-italic text-muted">“{{ movie.tagline }}”</p>
+                                            {% endif %}
+
+                                            {% if movie.overview %}
+                                                <p>{{ movie.overview }}</p>
+                                            {% endif %}
+
+                                            {% if movie.genres_metadata %}
+                                                <p><strong>Genres:</strong> {{ movie.genres_metadata }}</p>
+                                            {% endif %}
+
+                                            {% if movie.actors %}
+                                                <p><strong>Actors:</strong> {{ movie.actors }}</p>
+                                            {% endif %}
+
+                                            {% if movie.director %}
+                                                <p><strong>Director:</strong> {{ movie.director }}</p>
+                                            {% endif %}
+
+                                            {% if movie.imdb_id %}
+                                                <a href="https://www.imdb.com/title/{{ movie.imdb_id }}" target="_blank"
+                                                   class="btn btn-primary w-100 flex-fill py-2">
+                                                    View Movie on IMDb
+                                                </a>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-white">No recommendations found.</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+<!--{% for row in recommendation_rows %}-->
+<!--    <h2>{{ row.title }}</h2>-->
+
+<!--    {% for movie in row.movies %}-->
+<!--        {{ movie.title }}-->
+<!--    {% endfor %}-->
+<!--{% endfor %}-->
