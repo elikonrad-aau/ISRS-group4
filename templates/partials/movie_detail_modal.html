@@ -1,0 +1,33 @@
+{% load static %}
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <img
+            class="img-fluid rounded"
+            src="{% static 'posters/' %}{{ movie.movie_id }}.jpg"
+            alt="{{ movie.display_title }}"
+            onerror="this.onerror=null; this.src='{% static 'img/placeholder.jpg' %}';"
+        >
+    </div>
+
+    <div class="col-md-8">
+        <h2>{{ movie.display_title }}</h2>
+
+        <p class="text-muted">
+            {{ movie.genres|join:", " }}
+        </p>
+
+        {% if movie.metadata.overview %}
+            <p>{{ movie.metadata.overview }}</p>
+        {% endif %}
+
+        {% if movie.metadata.vote_average %}
+            <p>
+                ⭐ {{ movie.metadata.vote_average|floatformat:1 }}
+                {% if movie.metadata.vote_count %}
+                    · {{ movie.metadata.vote_count }} votes
+                {% endif %}
+            </p>
+        {% endif %}
+    </div>
+</div>

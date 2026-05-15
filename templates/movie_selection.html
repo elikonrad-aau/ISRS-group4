@@ -1,78 +1,61 @@
 {% extends "base.html" %}
 
+{% block bodyclass %} selection{% endblock %}
+
 {% block content %}
-    <!-- Welcome Card -->
-    <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="card shadow-md welcome">
+    <main class="movie-selection">
+        <!-- TODO – add random poster background -->
+        <section class="movie-search">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <div class="search-wrapper">
+                            <h1>Find your favorite movie</h1>
 
-            <!-- Headline, Description -->
-            <h2 class="mb-3">Welcome!</h2>
-            <p class="mb-5">Enter a userId (<= 10,000) and the number of neighbors (<= 500) that should be used for the
-                Collaborative Filtering Recommender System.</p>
+                            <input id="movie-search-input" class="form-control form-control-lg" type="text" placeholder="Search for your favorite movie..." autocomplete="off">
 
-            <!-- Form -->
-            <form method="post" novalidate>
-                {% csrf_token %}
-
-                <!-- UserID -->
-                <div class="form-floating mb-3">
-                    <input type="text" name="user_id" id="user-id-input" class="form-control"
-                           placeholder="Enter ID (1–10,000)">
-                    <label for="user-id-input">User ID</label>
-                    <div class="invalid-feedback" id="user-status"> User does not exist.</div>
-                </div>
-
-                <!-- Neighbors, Recommendations -->
-                <div class="row g-3 mb-5">
-                    <div class="col">
-                        <div class="form-floating">
-                            <input type="number" name="k" id="k" min="1" max="{{ MAX_K }}" value="50"
-                                   class="form-control" placeholder=" ">
-
-                            <label for="k">Neighbors (k)</label>
-                            <div class="invalid-feedback">
-                                Enter 1–500
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col">
-                        <div class="form-floating">
-                            <input type="number" name="n" id="n" min="1" max="{{ MAX_N }}" value="20"
-                                   class="form-control" placeholder=" ">
-                            <label for="n">Recommendations (n)</label>
-                            <div class="invalid-feedback">
-                                Enter 1–60
-                            </div>
+                            <div id="movie-search-results" class="search-results"></div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
+    </main>
 
-                <!-- Buttons -->
-                <div class="d-flex gap-3">
-                    <button type="button" id="lucky-button" class="btn btn-outline-primary w-40 flex-fill py-3">Surprise
-                        Me
-                    </button>
-                    <button type="submit" id="submit-button" class="btn btn-primary w-60 flex-fill py-3" disabled>
-                        Recommend Movies
-                    </button>
-                </div>
-            </form>
 
-            {% if error %}
-                <div class="alert alert-danger">{{ error }}</div>
-            {% endif %}
-        </div>
-    </div>
 {% endblock %}
 
-{% block script-bottom %}
-    <script>
-        window.RECOMMENDER_LIMITS = {
-            maxUserId: {{ MAX_USER_ID }},
-            maxK: {{ MAX_K }},
-            maxN: {{ MAX_N }}
-        };
-    </script>
+{% block modal %}
+    <div class="modal fade" id="movieConfirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <div id="movie-confirm-content">
+                        Loading...
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Choose another
+                    </button>
+
+                    <button type="button" id="confirm-movie-button" class="btn btn-primary">
+                        Confirm movie
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="loading-overlay" class="loading-overlay d-none">
+        <div class="text-center">
+            <div class="spinner-border text-light mb-3" role="status"></div>
+            <h2>Generating recommendations...</h2>
+            <p>Please wait.</p>
+        </div>
+    </div>
 {% endblock %}
 

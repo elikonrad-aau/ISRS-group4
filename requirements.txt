@@ -5,5 +5,5 @@ psycopg2-binary
 # Python Packages
 pandas
 numpy
-
+requests
 

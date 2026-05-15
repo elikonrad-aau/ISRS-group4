@@ -29,6 +29,8 @@ dataset/**
 
 # Docker/Postgres
 postgres_data/
+*.sql
+*.dump
 
 # Node
 node_modules/

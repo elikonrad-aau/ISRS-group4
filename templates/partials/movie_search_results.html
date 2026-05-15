@@ -1,0 +1,44 @@
+{% load static %}
+
+{% for movie in movies %}
+    <button
+        type="button"
+        class="search-result w-100 text-start border-0 bg-transparent"
+        data-movie-id="{{ movie.movie_id }}"
+        data-title="{{ movie.display_title }}"
+    >
+        <div class="row align-items-center g-3">
+
+            <!-- Poster -->
+            <div class="col-auto">
+                <img
+                    class="poster-image"
+                    src="{% static 'posters/' %}{{ movie.movie_id }}.jpg"
+                    alt="{{ movie.display_title }}"
+                    onerror="this.onerror=null; this.src='{% static 'img/placeholder.jpg' %}';"
+                >
+            </div>
+
+            <!-- Title + Genres -->
+            <div class="col">
+                <div class="fw-semibold">
+                    {{ movie.display_title }}
+                </div>
+
+                <div class="text-muted small">
+                    {{ movie.genres|join:", " }}
+                </div>
+            </div>
+
+            <!-- Rating -->
+            <div class="col-auto text-end">
+                Rating
+            </div>
+
+        </div>
+    </button>
+{% empty %}
+    <div class="search-result muted">
+        No movies found
+    </div>
+{% endfor %}

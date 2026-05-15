@@ -3,20 +3,27 @@ Movie Recommendation
 
 
 ## Setup
-1. Create .env file:
+1. Create `.env` file:
 ```bash
 cp .env.example .env
 ```
 
-2. Place the dataset files directly into:
-```text
-dataset/
+2. Build Docker:
+```bash
+docker compose up --build -d
 ```
 
-3. Build Docker
+3. Migrate Database:
 ```bash
-docker compose up --build
+docker compose exec web python manage.py migrate
 ```
+
+4. Restore Database from dump in `root` folder – Download from: https://drive.google.com/drive/folders/1d023Ph-vgjgNFjDr7sQCIrq2LfBkPS6x?usp=sharing
+```bash
+docker compose exec -T db pg_restore -U postgres -d app --clean --if-exists < db_dump.dump
+```
+
+5. Open:
 ```text
 http://127.0.0.1:8000
 ```

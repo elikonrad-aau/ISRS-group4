@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.frontend',
     'apps.recommender',
+    'apps.data',
 ]
 
 MIDDLEWARE = [
@@ -128,4 +129,5 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    ("posters", BASE_DIR / "dataset" / "posters"),
 ]
