@@ -1,26 +1,59 @@
 document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("movie-search-input");
     const resultsBox = document.getElementById("movie-search-results");
-
-    const modalElement = document.getElementById("movieConfirmModal");
-    const modalContent = document.getElementById("movie-confirm-content");
-    const confirmButton = document.getElementById("confirm-movie-button");
-
-    if (!input || !resultsBox) {
-        return;
-    }
+    const modalElement = document.getElementById("movie-confirm-modal");
+    const modalContent = modalElement.querySelector(".modal-dialog");
 
     let debounceTimeout = null;
     let selectedMovieId = null;
+    let activeIndex = -1;
     let lastResultsHtml = "";
+
+    function getResults() {
+        return Array.from(resultsBox.querySelectorAll(".search-result[data-movie-id]"));
+    }
+
+    function setActiveResult(index) {
+        const results = getResults();
+
+        results.forEach((item) => {
+            item.classList.remove("is-active");
+        });
+
+        if (!results.length) {
+            activeIndex = -1;
+            return;
+        }
+
+        activeIndex = Math.max(0, Math.min(index, results.length - 1));
+
+        results[activeIndex].classList.add("is-active");
+        results[activeIndex].scrollIntoView({
+            block: "nearest",
+        });
+    }
+
+    async function openMovieModal(item) {
+        selectedMovieId = item.dataset.movieId;
+
+        const response = await fetch(`/api/movies/${selectedMovieId}/`);
+        modalContent.innerHTML = await response.text();
+
+        resultsBox.innerHTML = "";
+
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+    }
 
     input.addEventListener("input", () => {
         const query = input.value.trim();
 
         clearTimeout(debounceTimeout);
+        activeIndex = -1;
 
         if (query.length < 2) {
             resultsBox.innerHTML = "";
+            lastResultsHtml = "";
             return;
         }
 
@@ -33,42 +66,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
             lastResultsHtml = html;
             resultsBox.innerHTML = html;
+
+            setActiveResult(0);
         }, 200);
     });
 
-    resultsBox.addEventListener("click", async (event) => {
-        const item = event.target.closest(".search-result");
+    input.addEventListener("keydown", async (event) => {
+        const results = getResults();
 
-        if (!item || !item.dataset.movieId) {
+        if (!results.length) {
             return;
         }
 
-        selectedMovieId = item.dataset.movieId;
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            setActiveResult(activeIndex + 1);
+        }
 
-        const response = await fetch(`/api/movies/${selectedMovieId}/`);
-        modalContent.innerHTML = await response.text();
+        if (event.key === "ArrowUp") {
+            event.preventDefault();
+            setActiveResult(activeIndex - 1);
+        }
 
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
+        if (event.key === "Enter") {
+            event.preventDefault();
 
-        resultsBox.innerHTML = "";
+            if (activeIndex >= 0) {
+                await openMovieModal(results[activeIndex]);
+            }
+        }
     });
 
-    confirmButton.addEventListener("click", () => {
-        if (!selectedMovieId) {
+    resultsBox.addEventListener("click", async (event) => {
+        const item = event.target.closest(".search-result[data-movie-id]");
+
+        if (!item) {
             return;
         }
 
-        document.getElementById("loading-overlay").classList.remove("d-none");
-
-        setTimeout(() => {
-            window.location.href = `/recommendations/?movie_id=${selectedMovieId}`;
-        }, 500);
+        await openMovieModal(item);
     });
 
     modalElement.addEventListener("hidden.bs.modal", () => {
         if (lastResultsHtml) {
             resultsBox.innerHTML = lastResultsHtml;
+            setActiveResult(0);
         }
+    });
+
+    document.addEventListener("click", (event) => {
+        const button = event.target.closest("#confirm-movie-button");
+
+        if (!button) {
+            return;
+        }
+
+        const movieId = button.dataset.movieId || selectedMovieId;
+
+        if (!movieId) {
+            console.error("No movie id found for confirm button.");
+            return;
+        }
+
+        window.location.href = `/recommendations/?movie_id=${movieId}`;
     });
 });

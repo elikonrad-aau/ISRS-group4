@@ -129,5 +129,6 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    ("posters", BASE_DIR / "dataset" / "posters"),
+    ("posters", BASE_DIR / "dataset" / "tmdb" /"posters"),
+    ("backdrops", BASE_DIR / "dataset" / "tmdb" / "main_backdrops"),
 ]

@@ -1,6 +1,4 @@
 {% load static %}
-
-<!DOCTYPE html>
 <html lang="en">
     <head>
         <!-- Meta Tags -->
@@ -17,9 +15,10 @@
 
         <!-- CSS -->
         <link rel="stylesheet" href="{% static 'css/main.css' %}">
+        <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
 
         <!-- Website Title -->
-        <title>Recommender | G4: Konrad, Schwazer</title>
+        <title>Movie Recommender | G4: Konrad, Schwazer</title>
     </head>
 
     <body class="recommender{% block bodyclass %}{% endblock %}">
@@ -31,12 +30,13 @@
         {% block content %}
         {% endblock %}
 
+        <!-- Modal Content -->
         {% block modal %}
         {% endblock %}
 
         <!-- Javascript -->
         <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
         <script src="{% static 'js/movie_selection.js' %}"></script>
-
+        <script src="{% static 'js/recommendation_slider.js' %}"></script>
     </body>
 </html>

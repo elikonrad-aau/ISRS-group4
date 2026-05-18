@@ -5,95 +5,415 @@
     font-variation-settings: "wdth" 100;
 }
 
-// Override Bootstrap Variables
-$font-family-base: 'Strichpunkt Sans', sans-serif;
+// Bootstrap variable overrides
+$font-family-base: "Strichpunkt Sans", sans-serif;
+$font-size-base: 1.125rem;
 $primary: #056877;
+$border-radius: .5rem;
 
-// Import Bootstrap
+// Bootstrap Icons variable override
+$bootstrap-icons-font-dir: "../fonts/bootstrap-icons/fonts";
+
+// Imports
 @import "../../node_modules/bootstrap/scss/bootstrap";
+@import "../fonts/bootstrap-icons/bootstrap-icons";
 
-// Add Custom Styles
+
+//
+// Base Styles
+//
 body {
     margin: 0;
     min-height: 100vh;
-    height: 100%;
-    background: radial-gradient(circle at 20% 95%, #056877, #051828 96%);
+    position: relative;
+    overflow-x: hidden;
+
+    &::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+
+        background: radial-gradient(
+                circle at 20% 95%,
+                #056877,
+                #051828 96%
+        );
+    }
 }
 
 main {
     min-height: 100vh;
     height: 100%;
+}
 
-    .movie-selection {
+h1, h2, h3, h4 {
+    color: $white;
 
+    .card & {
+        color: $primary;
+    }
+}
+
+h1 {
+    margin: 0 0 1.125rem 0;
+    font-size: 2.25rem;
+    font-weight: 500;
+}
+
+input.form-control {
+    font-size: $font-size-base;
+    border-radius: $border-radius;
+
+    &:focus {
+        box-shadow: none;
     }
 }
 
 
+//
+// Header
+//
 
-.poster-image {
-    width: 72px;
-    height: 72px;
-    object-fit: cover;
+header.fixed {
+    nav.navbar {
+        background: rgba(5, 24, 40, 0.75);
+        backdrop-filter: blur(20px);
+    }
 }
 
 
+//
+// Utilities
+//
+
+.line-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 8;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+.btn-round {
+    border-radius: 2rem;
+    padding: .25rem 1.25rem;
+}
+
+span.spacer {
+    display: block;
+
+    width: 4px;
+    height: 4px;
+
+    margin: 0 .25rem;
+
+    border-radius: 100%;
+
+    background-color: $text-muted;
+
+    #movie-confirm-modal & {
+        background-color: $gray-600;
+    }
+}
 
 
-.movie-search-box {
-    width: min(720px, 100%);
-    text-align: center;
+//
+// Shared Movie Elements
+//
+img.poster {
+    width: 80px;
+}
+
+.movie-meta {
+    color: $text-muted;
+    font-size: $font-size-sm;
+
+    #movie-confirm-modal &,
+    .hero-recommendations & {
+        color: $gray-600;
+        font-size: $font-size-base;
+    }
+
+    header & {
+        color: $gray-600;
+    }
+}
+
+
+//
+// Movie Selection
+//
+.movie-search {
+    padding-top: 40px;
 }
 
 .search-wrapper {
+    .search-results {
+        margin-top: 1rem;
+
+        overflow-y: scroll;
+
+        border-radius: $border-radius;
+
+        background: $white;
+
+        &:not(:empty) {
+            max-height: calc(100vh - 200px);
+
+            padding-bottom: .25rem;
+
+            border: $border-width solid $border-color;
+        }
+    }
+
+    .search-result {
+        border: none;
+        border-bottom: 1px solid $primary-border-subtle;
+
+        &:hover,
+        &.is-active {
+            background-color: $primary-bg-subtle;
+        }
+
+        &:last-of-type {
+            border-bottom: none;
+        }
+    }
+}
+
+
+//
+// Movie Confirm Modal
+//
+#movie-confirm-modal {
+    .modal-content {
+        .modal-header {
+            position: relative;
+
+            display: flex;
+            align-items: flex-end;
+
+            height: 400px;
+            padding: 2rem;
+
+            overflow: hidden;
+
+            background-size: cover;
+            background-position: center;
+
+            &::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+
+                pointer-events: none;
+
+                background: linear-gradient(
+                        to top,
+                        rgba(0, 0, 0, 0.9) 0%,
+                        rgba(0, 0, 0, 0.45) 45%,
+                        rgba(0, 0, 0, 0) 100%
+                );
+            }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+
+            color: $white;
+        }
+
+        .modal-body {
+            padding: 2rem 2rem 1rem 2rem;
+        }
+
+        .modal-footer {
+            position: relative;
+
+            border: none;
+
+            button {
+                padding: .5rem 1.5rem;
+            }
+        }
+    }
+}
+
+
+//
+// Hero Recommendation Slider
+//
+.hero-recommendations {
+    color: $white;
+}
+
+.hero-slider {
     position: relative;
-    margin-top: 2rem;
 }
 
-.search-results {
-    position: absolute;
-    z-index: 10;
-    width: 100%;
-    margin-top: 0.5rem;
-    border-radius: 1rem;
+.hero-slider-viewport {
     overflow: hidden;
-    background: #fff;
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.2);
-    text-align: left;
 }
 
-.search-result {
-    display: block;
-    width: 100%;
-    padding: 1rem 1.25rem;
+.hero-slider-track {
+    display: flex;
+
+    transition: transform 240ms ease;
+    will-change: transform;
+}
+
+.hero-slide {
+    position: relative;
+
+    flex: 0 0 100%;
+
+    min-height: 70vh;
+    height: 800px;
+
+    background-size: cover;
+    background-position: center;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+
+        pointer-events: none;
+
+        background: linear-gradient(
+                to top,
+                rgba(0, 0, 0, 0.9) 0%,
+                rgba(0, 0, 0, 0.45) 45%,
+                rgba(0, 0, 0, 0) 100%
+        );
+    }
+}
+
+.hero-slide-overlay {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    align-items: flex-end;
+
+    min-height: 100%;
+    padding: 4rem 0;
+
+    color: $white;
+}
+
+.hero-slider-indicators {
+    position: absolute;
+    left: 50%;
+    bottom: 2rem;
+    z-index: 5;
+
+    display: flex;
+    gap: .5rem;
+
+    transform: translateX(-50%);
+}
+
+.hero-slider-indicator {
+    width: .75rem;
+    height: .75rem;
+
     border: 0;
-    background: white;
-    text-align: left;
-    cursor: pointer;
+    border-radius: 999px;
 
-    &:hover {
-        background: #f1f3f5;
-    }
+    background: rgba($white, .35);
 
-    span {
-        display: block;
-        font-size: 0.875rem;
-        color: #6c757d;
-    }
+    transition: background-color 160ms ease,
+    transform 160ms ease;
 
-    &.muted {
-        color: #6c757d;
-        cursor: default;
+    &.is-active {
+        background: $white;
+        transform: scale(1.15);
     }
 }
 
-.loading-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 2000;
+
+//
+// Recommendation Card Slider
+//
+a.info {
+    color: $white;
+    font-size: $font-size-sm;
+
+    margin-left: 10px;
+    position: relative;
+    top: -2px;
+}
+
+.movie-slider {
+    position: relative;
+}
+
+.movie-slider-viewport {
+    overflow: hidden;
+}
+
+.movie-slider-track {
+    display: flex;
+    gap: 2rem;
+
+    transition: transform 240ms ease;
+    will-change: transform;
+}
+
+.movie-card {
+    padding: 0;
+    border: none;
+    flex: 0 0 calc((100% - 4rem) / 3);
+}
+
+.movie-card-image {
+    margin: 0;
+}
+
+.movie-card-poster {
+    width: 100%;
+
+    aspect-ratio: 3 / 2;
+
+    object-fit: cover;
+
+    border-radius: $border-radius-lg $border-radius-lg 0 0;
+}
+
+
+//
+// Slider Controls
+//
+.slider-control {
+    position: absolute;
+    top: 40%;
+    z-index: 5;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(5, 24, 40, 0.95);
-    color: white;
+
+    width: 3rem;
+    height: 3rem;
+
+    border: 0;
+    border-radius: 999px;
+
+    color: $white;
+    background: rgba($black, .55);
+
+    &:disabled {
+        display: none;
+    }
+}
+
+.slider-control-prev {
+    left: .5rem;
+}
+
+.slider-control-next {
+    right: .5rem;
 }

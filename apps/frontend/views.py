@@ -1,8 +1,9 @@
-from django.db.models import Q
+from django.db.models import Q, Avg, Count
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 from apps.data.models import Movie
+from apps.recommender.algorithms_recs import get_recommendation_rows
 
 
 def movie_search(request):
@@ -33,10 +34,11 @@ def movie_search(request):
     movies = (
         Movie.objects
         .filter(search)
-        .order_by(
-            "-metadata__popularity",
-            "-metadata__vote_count",
-        )[:5]
+        .annotate(
+            avg_rating=Avg("ratings__rating"),
+            rating_count=Count("ratings"),
+        )
+        .order_by("-avg_rating", "-rating_count")[:5]
     )
 
     return render(request, "partials/movie_search_results.html", {"movies": movies})
@@ -49,14 +51,29 @@ def movie_selection(request):
 
 def movie_detail(request, movie_id):
     movie = get_object_or_404(
-        Movie.objects.select_related("metadata"),
+        Movie.objects
+        .annotate(
+            avg_rating=Avg("ratings__rating"),
+            rating_count=Count("ratings"),
+        ),
         movie_id=movie_id,
     )
 
-    return render(request, "partials/movie_detail_modal.html", {
+    return render(request, "partials/movie_selection_modal.html", {
         "movie": movie,
     })
 
 def recommendations(request):
-    movie_id = request.GET.get("movie_id")
-    return render(request, "recommendations.html", {"movie_id": movie_id})
+    reference_movie_id = request.GET.get("movie_id")
+
+    reference_movie = get_object_or_404(Movie, movie_id=reference_movie_id)
+
+    recommendation_rows = get_recommendation_rows(
+        reference_movie_id=reference_movie.movie_id,
+        limit=10,
+    )
+
+    return render(request, "recommendations.html", {
+        "reference_movie": reference_movie,
+        "recommendation_rows": recommendation_rows,
+    })

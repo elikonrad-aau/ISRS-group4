@@ -1,0 +1,75 @@
+{% load static %}
+<div class="modal-content">
+   <div class="modal-header" style="background-image: url('{% static 'backdrops/' %}{{ movie.movie_id }}.jpg');">
+      <div class="header-content">
+         <h2>{{ movie.display_title }}</h2>
+         {% include "partials/movie_meta.html" %}
+      </div>
+   </div>
+   <div class="modal-body">
+      <div class="row">
+         <div class="col-7">
+            {% if movie.metadata.overview %}
+            <h3 class="h6 mb-3">Movie Summary</h3>
+            <p class="line-clamp">
+               {{ movie.metadata.overview }}
+            </p>
+            {% endif %}
+         </div>
+         <div class="col-5">
+            <div class="preference-section">
+               <h3 class="h6 mb-3">What did you love about this movie?</h3>
+               <div class="d-flex flex-wrap gap-2">
+                  <input type="checkbox" class="btn-check" id="pref-story" name="preferences" value="story"
+                     autocomplete="off">
+                  <label class="btn btn-outline-secondary btn-sm btn-round" for="pref-story">
+                  Storyline
+                  </label>
+                  <input type="checkbox" class="btn-check" id="pref-cast" name="preferences" value="cast"
+                     autocomplete="off">
+                  <label class="btn btn-outline-secondary btn-sm btn-round" for="pref-cast">
+                  Cast
+                  </label>
+                  <input type="checkbox" class="btn-check" id="pref-era" name="preferences" value="era"
+                     autocomplete="off">
+                  <label class="btn btn-outline-secondary btn-sm btn-round" for="pref-era">
+                  Movie Era
+                  </label>
+                  <input type="checkbox" class="btn-check" id="pref-sounds" name="preferences" value="visuals"
+                     autocomplete="off">
+                  <label class="btn btn-outline-secondary btn-sm btn-round" for="pref-sounds">
+                  Sound and Music
+                  </label>
+                  <input type="checkbox" class="btn-check" id="pref-mood" name="preferences" value="mood"
+                     autocomplete="off">
+                  <label class="btn btn-outline-secondary btn-sm btn-round" for="pref-mood">
+                  Mood and Visuals
+                  </label>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="modal-footer">
+      <div class="row w-100 justify-content-end">
+         <div class="col-5 d-flex gap-2">
+            <button
+               type="button"
+               class="btn btn-outline-primary"
+               data-bs-dismiss="modal"
+               >
+            Choose another movie
+            </button>
+            <button
+               type="button"
+               id="confirm-movie-button"
+               class="btn btn-primary"
+               data-movie-id="{{ movie.movie_id }}"
+               >
+            Use this movie
+            </button>
+         </div>
+      </div>
+   </div>
+</div>
+</div>

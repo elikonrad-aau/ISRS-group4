@@ -7,5 +7,5 @@ urlpatterns = [
     path("", movie_selection, name="movie_selection"),
     path("api/movies/search/", movie_search, name="movie_search"),
     path("api/movies/<int:movie_id>/", movie_detail, name="movie_detail"),
-    path("recommendations/", recommendations, name="recommendations")
+    path("recommendations/", recommendations, name="recommendations"),
 ]
