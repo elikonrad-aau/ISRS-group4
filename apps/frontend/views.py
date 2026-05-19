@@ -38,7 +38,7 @@ def movie_search(request):
             avg_rating=Avg("ratings__rating"),
             rating_count=Count("ratings"),
         )
-        .order_by("-avg_rating", "-rating_count")[:5]
+        .order_by("-rating_count", "-avg_rating")[:10]
     )
 
     return render(request, "partials/movie_search_results.html", {"movies": movies})
