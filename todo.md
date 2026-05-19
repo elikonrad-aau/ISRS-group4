@@ -4,7 +4,7 @@
 - [x] Project Setup
 - [ ] Frontend Design
   - [x] Search Page
-  - [ ] Tags Page (What did the user like about the movie)
+  - [x] Tags Page (What did the user like about the movie)
   - [ ] Recommendations Page
 
 ## Logic
