@@ -54,6 +54,7 @@ finds the movies that have a visual similarity to the reference movie.
 3. create embedding for each downloaded image and combine them into one visual embedding per movie
 4. compare the movie embedding of the reference movie with all other embeddings 
 5. return the most similar movies (visually)
+- Large Vision Language Models?
 
 ## Function 5: Semantic Recommender based on subtitles
 uses textual movie information to recommend movies from subtitles
@@ -77,3 +78,9 @@ Steps:
 2.	Retrieve a sample of users who have LIKED this movie 
 3.	For each of these users, fetch their LIKED list or top-rated films
 4.	Maybe also ranking the movies by frequency: How many of the other  movie fans also liked this movie -> order by frequency
+
+
+### Evaluation:
+- Choice of Movies (popular, not popular, ...)
+- Friends and Family?
+- LLM as a judge for the recommendations
