@@ -8,7 +8,7 @@
   - [ ] Recommendations Page
 
 ## Logic
-- [x] Dumb Baseline (Algorithm 0)
+- [x] TMDB Baseline (Algorithm 0)
 - [ ] Credits-based Function (Algorithm 1)
   - [x] Actors Matrixs Persistence
   - [x] Order
