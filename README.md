@@ -55,13 +55,14 @@ finds the movies that have a visual similarity to the reference movie.
 4. compare the movie embedding of the reference movie with all other embeddings 
 5. return the most similar movies (visually)
 
-## Function 5: Semantic Recommender (Retrieval-Augmented Generation / RAG)
-uses textual movie information to recommend movies with similar tone, story, context, ...
-1. create one text document per movie using the most important contextual information + subtitles
-2. use a sentence transformer to create embeddings and store it
-3. retrieve the nearest semantic neighbors
-4. (Optional) feed the embedding to a LLM and ask the LLM for the best recommendations
-
+## Function 5: Semantic Recommender based on subtitles
+uses textual movie information to recommend movies from subtitles
+- word count
+- compare length of the parts in a conversation
+- in combination with genre?
+- spaCy for vectors similarity
+- https://dl.acm.org/doi/epdf/10.1145/3503252.3531291
+  
 ## Function 6: Hybrid Recommender (Top Recommendations)
 Takes the ranks from each recommender and sorts them by their ranks across recommender algorithms with reciprocal rank fusion (RRF) and using the users preferences as weighting for the scores
 
