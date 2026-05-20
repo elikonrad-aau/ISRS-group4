@@ -1,16 +1,7 @@
 from django.contrib import admin
+from .models import (Movie, Rating, Tag, MovieLink, GenomeTag, GenomeScore, MovieMetadata, MovieCredits,)
 
-from .models import (
-    Movie,
-    Rating,
-    Tag,
-    MovieLink,
-    GenomeTag,
-    GenomeScore,
-    MovieMetadata,
-    MovieCredits,
-)
-
+# exposes models/data to the admin interface
 admin.site.register(Movie)
 admin.site.register(Rating)
 admin.site.register(Tag)

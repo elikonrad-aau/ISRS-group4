@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let index = 0;
 
         function getCardsPerView() {
-            return Number(slider.dataset.sliderPerView || 5);
+            return Number(slider.dataset.sliderPerView || 3);
         }
 
         function updateSlider() {

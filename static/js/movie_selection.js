@@ -8,6 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedMovieId = null;
     let activeIndex = -1;
     let lastResultsHtml = "";
+    let searchController = null;
+    let latestSearchQuery = "";
+    let searchTimeout = 100;
 
     function getResults() {
         return Array.from(resultsBox.querySelectorAll(".search-result[data-movie-id]"));
@@ -51,24 +54,45 @@ document.addEventListener("DOMContentLoaded", () => {
         clearTimeout(debounceTimeout);
         activeIndex = -1;
 
+        if (searchController) {
+            searchController.abort();
+        }
+
         if (query.length < 2) {
             resultsBox.innerHTML = "";
             lastResultsHtml = "";
             return;
         }
 
+        latestSearchQuery = query;
+
         debounceTimeout = setTimeout(async () => {
-            const response = await fetch(
-                `/api/movies/search/?q=${encodeURIComponent(query)}`
-            );
+            searchController = new AbortController();
 
-            const html = await response.text();
+            try {
+                const response = await fetch(
+                    `/api/movies/search/?q=${encodeURIComponent(query)}`,
+                    {
+                        signal: searchController.signal,
+                    }
+                );
 
-            lastResultsHtml = html;
-            resultsBox.innerHTML = html;
+                const html = await response.text();
 
-            setActiveResult(0);
-        }, 200);
+                if (query !== latestSearchQuery) {
+                    return;
+                }
+
+                lastResultsHtml = html;
+                resultsBox.innerHTML = html;
+
+                setActiveResult(0);
+            } catch (error) {
+                if (error.name !== "AbortError") {
+                    console.error("Search failed:", error);
+                }
+            }
+        }, searchTimeout);
     });
 
     input.addEventListener("keydown", async (event) => {

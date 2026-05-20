@@ -6,24 +6,26 @@ from pathlib import Path
 from django.core.management.base import BaseCommand, CommandError
 from apps.data.models import MovieLink
 
-
+# API variables
 TMDB_API_BASE = "https://api.themoviedb.org/3"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p"
 
+# download settings
 BATCH_SIZE = 1000
 BACKDROPS_PER_MOVIE = 5
-
 POSTER_SIZE = "w500"
 MAIN_BACKDROP_SIZE = "w1280"
 RESNET_BACKDROP_SIZE = "w300"
-
 SLEEP_BETWEEN_MOVIES = 0.25
 SLEEP_BETWEEN_BATCHES = 60
 RETRY_COUNT = 5
 
+# bookkeeping file (progress for request fails)
 PROGRESS_FILE = Path("dataset/tmdb/progress.txt")
 
-
+#
+# command: docker compose exec web python manage.py tmdb_download
+#
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--overwrite", action="store_true")

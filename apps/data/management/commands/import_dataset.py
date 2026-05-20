@@ -6,21 +6,15 @@ from pathlib import Path
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-from apps.data.models import (
-    Movie,
-    Rating,
-    Tag,
-    MovieLink,
-    GenomeTag,
-    GenomeScore,
-    MovieMetadata,
-    MovieCredits,
-)
+from apps.data.models import (Movie, Rating, Tag, MovieLink, GenomeTag, GenomeScore, MovieMetadata, MovieCredits,)
 
-
+#
+# command: docker compose exec web python manage.py import_dataset
+#
 class Command(BaseCommand):
     help = "Import dataset CSV files into the database"
 
+    # import handler
     def handle(self, *args, **options):
         dataset_dir = Path("dataset")
 
@@ -38,6 +32,7 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS("Dataset import completed."))
 
+    # helper/parser methods
     def read_csv(self, path):
         if not path.exists():
             raise CommandError(f"Missing required file: {path}")
@@ -90,6 +85,8 @@ class Command(BaseCommand):
         except Exception:
             return default
 
+
+    # import movies.csv
     @transaction.atomic
     def import_movies(self, path):
         rows = self.read_csv(path)
@@ -107,6 +104,8 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Imported movies: {count}"))
 
+
+    # import links.csv
     @transaction.atomic
     def import_links(self, path):
         rows = self.read_csv(path)
@@ -131,6 +130,8 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Imported links: {count}, skipped: {skipped}"))
 
+
+    # import ratings.csv
     @transaction.atomic
     def import_ratings(self, path):
         rows = self.read_csv(path)
@@ -170,6 +171,8 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Imported ratings: {count}, skipped: {skipped}"))
 
+
+    # import tags.csv
     @transaction.atomic
     def import_tags(self, path):
         rows = self.read_csv(path)
@@ -209,6 +212,8 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Imported tags: {count}, skipped: {skipped}"))
 
+
+    # import genome_tags.csv
     @transaction.atomic
     def import_genome_tags(self, path):
         rows = self.read_csv(path)
@@ -225,6 +230,8 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Imported genome tags: {count}"))
 
+
+    # import genome_scores.csv
     @transaction.atomic
     def import_genome_scores(self, path):
         rows = self.read_csv(path)
@@ -265,6 +272,8 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Imported genome scores: {count}, skipped: {skipped}"))
 
+
+    # import movies_metadata.csv
     @transaction.atomic
     def import_movies_metadata(self, path):
         rows = self.read_csv(path)
@@ -317,6 +326,8 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Imported movie metadata: {count}, skipped: {skipped}"))
 
+
+    # import credits.csv
     @transaction.atomic
     def import_credits(self, path):
         rows = self.read_csv(path)

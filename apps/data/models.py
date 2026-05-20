@@ -2,16 +2,25 @@ import re
 
 from django.db import models
 
+#
+# define models for the data/db
+#
 # movies.csv
 class Movie(models.Model):
     movie_id = models.IntegerField(unique=True)
     title = models.CharField(max_length=255)
     genres = models.JSONField(default=list)
+    year = models.IntegerField(null=True, blank=True)
 
+    # fix titles
     @property
     def display_title(self):
         title = self.title
 
+        # remove the year from the title
+        title = re.sub(r"\s*\(\d{4}\)$", "", title)
+
+        # fix the formatting of the articles "the", "a", "an"
         patterns = [
             r"^(.*), The (\(.*\))$",
             r"^(.*), A (\(.*\))$",
@@ -30,8 +39,17 @@ class Movie(models.Model):
 
         return title
 
+    @property
+    def extracted_year(self):
+        match = re.search(r"\((\d{4})\)$", self.title)
+        return int(match.group(1)) if match else None
+
+    def save(self, *args, **kwargs):
+        self.year = self.extracted_year
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return self.title
+        return self.display_title
 
 
 # ratings.csv

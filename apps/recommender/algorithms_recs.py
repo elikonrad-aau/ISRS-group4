@@ -1,9 +1,10 @@
 import os
+import ast
 import requests
 
-from apps.data.models import Movie, MovieLink
+from apps.data.models import Movie, MovieLink, MovieMetadata
 
-
+# TODO FINAL - Delete
 MOCK_ROWS = [
     "Collaborative Filtering",
     "Shared Cast Overlap",
@@ -15,16 +16,31 @@ MOCK_ROWS = [
 
 
 def get_recommendation_rows(reference_movie_id, limit=20):
+    '''
+    title -> name of the algorithm for the frontend
+    algorithm -> slug for the algorithm
+    movies -> list of movies returned from the algorithm
+    '''
+
+    # all recommendations
     rows = []
 
     # baseline algorithm
     rows.append({
-        "title": "TMDB Recommendations",
+        "title": "TMDB API Recommendations",
         "algorithm": "tmdb",
         "movies": recommend_by_tmdb(reference_movie_id, limit),
     })
 
-    # dummy data
+    # TODO - Add Algorithms
+    # function 1 algorithm
+    # function 2 algorithm
+    # function 3 algorithm
+    # function 4 algorithm
+    # function 5 algorithm
+    # function 6 algorithm
+
+    # TODO FINAL - Delete
     for row_title in MOCK_ROWS:
         rows.append({
             "title": row_title,
@@ -32,9 +48,20 @@ def get_recommendation_rows(reference_movie_id, limit=20):
             "movies": get_random_movies(reference_movie_id, limit),
         })
 
+    # collection – only append if the reference movie is part of a collection
+    collection_movies = recommend_by_collection(reference_movie_id, limit)
+
+    if collection_movies:
+        rows.append({
+            "title": "Have you seen these?",
+            "algorithm": "collection",
+            "movies": collection_movies,
+        })
+
+
     return rows
 
-
+# TODO FINAL - Delete
 def get_random_movies(reference_movie_id, limit=20):
     return list(
         Movie.objects
@@ -43,7 +70,7 @@ def get_random_movies(reference_movie_id, limit=20):
     )
 
 
-# get baseline recommendations from tmdb
+# baseline algorithm – implementation
 def recommend_by_tmdb(reference_movie_id, limit=20):
     token = os.environ.get("TMDB_API_TOKEN")
 
@@ -60,7 +87,6 @@ def recommend_by_tmdb(reference_movie_id, limit=20):
 
     matched_movies = []
     seen_movie_ids = set()
-
     page = 1
     max_pages = 5
 
@@ -125,3 +151,48 @@ def recommend_by_tmdb(reference_movie_id, limit=20):
         page += 1
 
     return matched_movies
+
+
+# show all movies from the same collection
+def recommend_by_collection(reference_movie_id, limit=20):
+    # get the model
+    reference_metadata = (
+        MovieMetadata.objects
+        .filter(movie__movie_id=reference_movie_id)
+        .first()
+    )
+
+    if not reference_metadata:
+        return []
+
+    # check if movie belongs to collection
+    collection = reference_metadata.belongs_to_collection
+
+    if not collection:
+        return []
+
+    if isinstance(collection, str):
+        try:
+            collection = ast.literal_eval(collection)
+        except (ValueError, SyntaxError):
+            return []
+
+    # get name of the collection
+    collection_name = collection.get("name")
+
+    if not collection_name:
+        return []
+
+    # get all movies from the same collection
+    collection_movies = (
+        MovieMetadata.objects
+        .filter(belongs_to_collection__icontains=collection_name)
+        .exclude(movie__movie_id=reference_movie_id)        # exclude the reference movie from the collection
+        .select_related("movie")
+        .order_by("release_date")
+    )
+
+    return [
+        metadata.movie
+        for metadata in collection_movies[:limit]
+    ]
