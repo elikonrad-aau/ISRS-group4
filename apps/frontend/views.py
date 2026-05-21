@@ -4,6 +4,10 @@ from django.shortcuts import render, get_object_or_404
 
 from apps.data.models import Movie
 from apps.recommender.algorithms_recs import get_recommendation_rows
+from django.conf import settings
+import os
+import random
+import traceback
 
 
 # live search views
@@ -69,10 +73,30 @@ def movie_search(request):
 
 # movie selection page
 def movie_selection(request):
-    return render(request, "movie_selection.html")
+    try:
+        collages_dir = os.path.join(settings.BASE_DIR, 'static', 'collages')
 
+        if not os.path.exists(collages_dir):
+            print(f"ERROR: Directory not found: {collages_dir}")
+            selected_bg = None
+        else:
+            collages = [f for f in os.listdir(collages_dir) if f.endswith('.jpg')]
 
-# movie selection modal
+            if not collages:
+                print(f"WARNING: No .jpg files found in {collages_dir}")
+                selected_bg = None
+            else:
+                selected_filename = random.choice(collages)
+                selected_bg = f"/static/collages/{selected_filename}"
+            print(selected_bg)
+        return render(request, 'movie_selection.html', {'background_image': selected_bg})
+
+    except Exception as e:
+        print(f"CRITICAL ERROR in movie_selection: {e}")
+        traceback.print_exc()
+        return render(request, '500.html', status=500)
+
+    # movie selection modal
 def movie_detail(request, movie_id):
     movie = get_object_or_404(
         Movie.objects
