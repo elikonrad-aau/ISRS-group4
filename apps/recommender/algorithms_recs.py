@@ -1,13 +1,14 @@
 import os
 import ast
 import requests
+from django.http import JsonResponse
 
 from apps.data.models import Movie, MovieLink, MovieMetadata
+from apps.recommender.cast_overlap import CastOverlapRecommender
 
 # TODO FINAL - Delete
 MOCK_ROWS = [
     "Collaborative Filtering",
-    "Shared Cast Overlap",
     "Visual Mood",
     "Text Semantic",
     "Genome Score",
@@ -35,6 +36,12 @@ def get_recommendation_rows(reference_movie_id, limit=20):
     # TODO - Add Algorithms
     # function 1 algorithm
     # function 2 algorithm
+    rows.append({
+        "title": "Shared Cast Overlap",
+        "algorithm": "tmdb",
+        "movies": recommend_cast_overlap(reference_movie_id, limit),
+    })
+
     # function 3 algorithm
     # function 4 algorithm
     # function 5 algorithm
@@ -152,6 +159,23 @@ def recommend_by_tmdb(reference_movie_id, limit=20):
 
     return matched_movies
 
+
+def recommend_cast_overlap(reference_movie_id, limit=20):
+    # TODO: crew, collections
+    recommender = CastOverlapRecommender()
+    result = recommender.recommend_cast_overlap(reference_movie_id, limit=limit)
+
+    movie_objects = []
+    for rec in result:
+        try:
+            movie = Movie.objects.get(movie_id=rec['MovieID'])
+            movie.overlap_count = rec['OverlapCount']
+            movie.average_rating = rec['AverageRating']
+            movie_objects.append(movie)
+        except Movie.DoesNotExist:
+            continue
+
+    return movie_objects
 
 # show all movies from the same collection
 def recommend_by_collection(reference_movie_id, limit=20):
