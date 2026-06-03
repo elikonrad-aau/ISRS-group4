@@ -22,15 +22,25 @@ class Movie(models.Model):
 
         # fix the formatting of the articles "the", "a", "an"
         patterns = [
+            # titles with year
             r"^(.*), The (\(.*\))$",
             r"^(.*), A (\(.*\))$",
             r"^(.*), An (\(.*\))$",
+
+            # titles without year
+            r"^(.*), The$",
+            r"^(.*), A$",
+            r"^(.*), An$",
         ]
 
         replacements = [
             r"The \1 \2",
             r"A \1 \2",
             r"An \1 \2",
+
+            r"The \1",
+            r"A \1",
+            r"An \1",
         ]
 
         for pattern, replacement in zip(patterns, replacements):
