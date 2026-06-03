@@ -10,12 +10,52 @@ from apps.data.models import Movie, MovieLink, MovieMetadata
 from apps.recommender.cast_overlap import CastOverlapRecommender
 
 
+#
+# helper functions
+#
+# function for removing movies from the same collection
+def get_collection_movie_ids(reference_movie_id):
+    # load metadata of reference movie
+    reference_metadata = (MovieMetadata.objects.filter(movie__movie_id=reference_movie_id).first())
+    if not reference_metadata:
+        return set()
+
+    # check if reference movie belongs to a collection
+    collection = reference_metadata.belongs_to_collection
+    if not collection:
+        return set()
+
+    # conver metadata string into dictionary
+    if isinstance(collection, str):
+        try:
+            collection = ast.literal_eval(collection)
+        except (ValueError, SyntaxError):
+            return set()
+
+    # get the name of the collection from the dictionary
+    collection_name = collection.get("name")
+    if not collection_name:
+        return set()
+
+    # find all movies in the same collection
+    return set(MovieMetadata.objects.filter(belongs_to_collection__icontains=collection_name).values_list("movie__movie_id", flat=True))
+
+# filter for removing movies from the same collection
+def exclude_collection_movies(movies, excluded_movie_ids):
+    return [movie for movie in movies if movie.movie_id not in excluded_movie_ids]
+
+#
+# recommendation functions
+#
 def get_recommendation_rows(reference_movie_id, limit=20):
     '''
     title -> name of the algorithm for the frontend
     algorithm -> slug for the algorithm
     movies -> list of movies returned from the algorithm
     '''
+
+    # get ids for all movies in the same collection (for excluding them if necessary)
+    collection_movie_ids = get_collection_movie_ids(reference_movie_id)
 
     # all recommendations
     rows = []
@@ -43,8 +83,10 @@ def get_recommendation_rows(reference_movie_id, limit=20):
     rows.append({
         "title": "Visual Image Similarity",
         "algorithm": "image_similarity",
-        "movies": recommend_image_similarity(reference_movie_id, limit),
+        # "movies": recommend_image_similarity(reference_movie_id, limit),
+        "movies": exclude_collection_movies(recommend_image_similarity(reference_movie_id, limit * 3), collection_movie_ids)[:limit],
     })
+
 
     # function 5 algorithm – Elisabeth
 
@@ -279,3 +321,4 @@ def recommend_by_collection(reference_movie_id, limit=20):
         metadata.movie
         for metadata in collection_movies[:limit]
     ]
+
