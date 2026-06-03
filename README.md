@@ -69,13 +69,4 @@ Takes the ranks from each recommender and sorts them by their ranks across recom
 If the reference movie is in a collection, these movies will be excluded from our custom algorithms.
 However, there will be a section at the bottom of the page featuring all movies from the same collection so that the user can make sure that he/she has seen all of them already.
 
-## Optional Function: Letterboxd (API Access uncertain)
-Collaborative Filtering (User Behavior and Taste Profile) -> Instead of looking at the movie metadata – looking for who liked the movie -> identify users who have LIKED or rated the reference movie highly and then recommend other movies those users liked.
-Steps:
-1.	Fetch the reference movie's ID (?)
-2.	Retrieve a sample of users who have LIKED this movie 
-3.	For each of these users, fetch their LIKED list or top-rated films
-4.	Maybe also ranking the movies by frequency: How many of the other  movie fans also liked this movie -> order by frequency
-
-
 # Evaluation Ideas
