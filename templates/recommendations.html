@@ -105,7 +105,21 @@
 <section class="recommendation-row mb-5">
     <div class="container px-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">{{ row.title }}<a class="info" href="#"><i class="bi bi-info-circle"></i></a></h4>
+            <h4 class="mb-0">{{ row.title }}
+                {% if row.description %}
+                <button
+                        type="button"
+                        class="info border-0 bg-transparent p-0"
+                        data-bs-toggle="popover"
+                        data-bs-trigger="focus"
+                        data-bs-placement="bottom"
+                        data-bs-content="{{ row.description }}"
+                >
+                    <i class="bi bi-info-circle"></i>
+                </button>
+                {% endif %}
+            </h4>
+
         </div>
         <div class="movie-slider" data-slider>
             <button type="button" class="slider-control slider-control-prev" data-slider-prev>
@@ -114,7 +128,7 @@
             <div class="movie-slider-viewport">
                 <div class="movie-slider-track" data-slider-track>
                     {% for movie in row.movies %}
-                     <div class="card movie-card d-flex flex-column">
+                    <div class="card movie-card d-flex flex-column">
                         <figure class="movie-card-image">
                             <img
                                     class="movie-card-poster"
@@ -131,9 +145,9 @@
                             {% include "partials/movie_meta.html" with movie=movie %}
                         </div>
 
-                         <a href="/recommendations/?movie_id={{ movie.movie_id }}"
+                        <a href="/recommendations/?movie_id={{ movie.movie_id }}"
                            class="btn btn-outline-primary mx-3 mt-auto mb-3">
-                           Select this movie
+                            Select this movie
                         </a>
                     </div>
                     {% endfor %}

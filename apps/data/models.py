@@ -178,6 +178,35 @@ class GenomeScore(models.Model):
     def __str__(self):
         return f"{self.movie.title} - {self.genome_tag.tag}: {self.relevance}"
 
+# calculated genome profiles
+class MovieGenomeProfile(models.Model):
+    movie = models.OneToOneField(
+        Movie,
+        on_delete=models.CASCADE,
+        related_name="genome_profile",
+    )
+
+    top_genome_tags = models.JSONField()
+
+    def __str__(self):
+        return f"Genome profile for {self.movie.title}"
+
+class GenomeRecommendation(models.Model):
+    movie = models.OneToOneField(
+        Movie,
+        on_delete=models.CASCADE,
+        related_name="genome_recommendation",
+    )
+
+    recommended_movies = models.JSONField(
+        default=list,
+        blank=True,
+    )
+
+    def __str__(self):
+        return f"Genome recommendations for {self.movie.title}"
+
+
 
 # movies_metadata.csv
 class MovieMetadata(models.Model):

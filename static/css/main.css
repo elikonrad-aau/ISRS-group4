@@ -20486,10 +20486,10 @@ header .movie-meta {
   transform: scale(1.15);
 }
 
-a.info {
+button.info {
   color: #fff;
   font-size: 0.984375rem;
-  margin-left: 10px;
+  margin-left: 5px;
   position: relative;
   top: -2px;
 }
