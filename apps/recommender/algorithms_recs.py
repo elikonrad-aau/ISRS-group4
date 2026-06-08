@@ -9,7 +9,7 @@ from django.conf import settings
 from apps.data.models import Movie, MovieLink, MovieMetadata, MovieGenomeProfile, GenomeRecommendation
 from apps.recommender.cast_overlap import CastOverlapRecommender
 from apps.recommender.algorithms.rec_subtitles import SubtitleRecommender
-
+from apps.recommender.tmdb_similarity_eval import evaluate_using_tmdb
 #
 # helper functions
 #
@@ -60,7 +60,9 @@ def get_recommendation_rows(reference_movie_id, limit=20):
     '''
 
     # get ids for all movies in the same collection (for excluding them if necessary)
-    collection_movie_ids = get_collection_movie_ids(reference_movie_id)
+    recommend_same_collection = False # Variable TODO option make it a toggle
+    if not recommend_same_collection: collection_movie_ids = get_collection_movie_ids(reference_movie_id)
+    else: collection_movie_ids = set()
 
     # all recommendations
     rows = []
@@ -81,7 +83,7 @@ def get_recommendation_rows(reference_movie_id, limit=20):
         "title": "Shared Cast Overlap",
         "algorithm": "tmdb",
         "description": "???",
-        "movies":  exclude_collection_movies(recommend_cast_overlap(reference_movie_id, limit), collection_movie_ids)[:limit],
+        "movies":  recommend_cast_overlap(reference_movie_id, limit),
     })
 
     # function 3 algorithm
@@ -130,8 +132,30 @@ def get_recommendation_rows(reference_movie_id, limit=20):
             "movies": collection_movies,
         })
 
+    distinct_movieids = get_distinct_movieids_for_eval(rows)
+    evaluate_using_tmdb(reference_movie_id, distinct_movieids, "recommendations", 20)
+    evaluate_using_tmdb(reference_movie_id, distinct_movieids, "similar", 20)
+
     return rows
 
+
+def get_distinct_movieids_for_eval(rows):
+    distinct_ids = set()
+
+    for row in rows:
+        if row.get("algorithm") == "tmdb":
+            continue
+
+        movies_list = row.get("movies", [])
+        for movie in movies_list:
+            if hasattr(movie, 'movie_id'):
+                distinct_ids.add(movie.movie_id)
+            elif isinstance(movie, dict) and "movie_id" in movie:
+                distinct_ids.add(movie["movie_id"])
+
+    print(f"\n--- Distinct Movie IDs Found ({len(distinct_ids)} total) ---")
+    print(", ".join(map(str, sorted(distinct_ids))))
+    return distinct_ids
 
 # baseline algorithm – implementation
 def recommend_by_tmdb(reference_movie_id, limit=20):
