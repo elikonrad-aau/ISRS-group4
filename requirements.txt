@@ -17,3 +17,7 @@ transformers
 accelerate
 safetensors
 timm
+
+# subtitles model
+sentence-transformers
+scikit-learn

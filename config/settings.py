@@ -132,3 +132,6 @@ STATICFILES_DIRS = [
     ("posters", BASE_DIR / "dataset" / "tmdb" /"posters"),
     ("backdrops", BASE_DIR / "dataset" / "tmdb" / "main_backdrops"),
 ]
+
+EMBEDDINGS_PATH = BASE_DIR / "static" / "models" / "subtitles_model_total" # path for subtitles model
+# (total: total files, "subtitles_model" - embeddings only first 256 tokens of subtitle files)

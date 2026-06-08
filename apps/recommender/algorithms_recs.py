@@ -8,8 +8,7 @@ from django.conf import settings
 
 from apps.data.models import Movie, MovieLink, MovieMetadata, MovieGenomeProfile, GenomeRecommendation
 from apps.recommender.cast_overlap import CastOverlapRecommender
-
-# test
+from apps.recommender.algorithms.rec_subtitles import SubtitleRecommender
 
 #
 # helper functions
@@ -82,7 +81,7 @@ def get_recommendation_rows(reference_movie_id, limit=20):
         "title": "Shared Cast Overlap",
         "algorithm": "tmdb",
         "description": "???",
-        "movies": recommend_cast_overlap(reference_movie_id, limit),
+        "movies":  exclude_collection_movies(recommend_cast_overlap(reference_movie_id, limit), collection_movie_ids)[:limit],
     })
 
     # function 3 algorithm
@@ -112,6 +111,11 @@ def get_recommendation_rows(reference_movie_id, limit=20):
     })
 
     # function 5 algorithm – Elisabeth
+    rows.append({
+        "title": "Recommendations based on subtitles",
+        "algorithm": "subtitles",
+        "movies":  exclude_collection_movies(recommend_by_subtitles(reference_movie_id, limit), collection_movie_ids)[:limit],
+    })
 
     # function 6 algorithm –  Hybrid
 
@@ -223,6 +227,24 @@ def recommend_cast_overlap(reference_movie_id, limit=20):
             movie = Movie.objects.get(movie_id=rec['MovieID'])
             movie.overlap_count = rec['OverlapCount']
             movie.average_rating = rec['AverageRating']
+            movie_objects.append(movie)
+        except Movie.DoesNotExist:
+            continue
+
+    return movie_objects
+
+
+
+def recommend_by_subtitles(reference_movie_id, limit = 10):
+    recommender = SubtitleRecommender()
+    result, error = recommender.get_recommendations(reference_movie_id, limit)
+    movie_objects = []
+    print(result)
+    for rec in result:
+        try:
+            if rec is None: continue
+            movie = Movie.objects.get(movie_id=rec["MovieID"])
+            movie.similarity_score = rec["similarity_score"]
             movie_objects.append(movie)
         except Movie.DoesNotExist:
             continue
