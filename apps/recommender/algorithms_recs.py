@@ -84,64 +84,64 @@ def get_recommendation_rows(reference_movie_id, limit=20):
         "description": "???",
         "movies": exclude_collection_movies(recommend_item_knn(reference_movie_id, limit), collection_movie_ids)[:limit]
     })
-
-    # function 2 algorithm
-    rows.append({
-        "title": "Shared Cast Overlap",
-       "algorithm": "castoverlap",
-        "description": "???",
-        "movies":   exclude_collection_movies(recommend_cast_overlap(reference_movie_id, limit), collection_movie_ids)[:limit]
-   })
-
-    # function 3 algorithm
-    rows.append({
-        "title": "Genome Tag Overlap",
-        "algorithm": "genome_overlap",
-        "description": "???",
-        # "movies": recommend_genome_similarity(reference_movie_id, limit),
-        "movies": exclude_collection_movies(recommend_genome_similarity(reference_movie_id, limit * 3), collection_movie_ids)[:limit],
-    })
-
-    # function 4 algorithm
-    rows.append({
-        "title": "Visual Image Similarity",
-        "algorithm": "image_similarity",
-        "description": "???",
-        # "movies": recommend_embedding_similarity(reference_movie_id, limit, "clip-vit-large-patch14"),
-        "movies": exclude_collection_movies(recommend_embedding_similarity(reference_movie_id, limit * 3, "clip-vit-large-patch14"), collection_movie_ids)[:limit],
-    })
-
-    rows.append({
-        "title": "Visual + Genome Similarity",
-        "algorithm": "image_text_similarity",
-        "description": "???",
-        # "movies": recommend_embedding_similarity(reference_movie_id, limit, "clip-vit-large-patch14-image-genome"),
-        "movies": exclude_collection_movies(recommend_embedding_similarity(reference_movie_id, limit * 3, "clip-vit-large-patch14-image-genome"), collection_movie_ids)[:limit],
-    })
-
-    # function 5 algorithm – Elisabeth
-    rows.append({
-        "title": "Recommendations based on subtitles",
-        "algorithm": "subtitles",
-        "movies":  exclude_collection_movies(recommend_by_subtitles(reference_movie_id, limit), collection_movie_ids)[:limit],
-    })
-
-    # function 6 algorithm –  Hybrid
-
-    # collection – only append if the reference movie is part of a collection
-    collection_movies = recommend_by_collection(reference_movie_id, limit)
-
-    if collection_movies:
-        rows.append({
-            "title": "Have you seen these?",
-            "algorithm": "collection",
-            "description": "???",
-            "movies": collection_movies,
-        })
-
-    distinct_movieids = get_distinct_movieids_for_eval(rows)
-    evaluate_using_tmdb(reference_movie_id, distinct_movieids, "recommendations", 20)
-    evaluate_using_tmdb(reference_movie_id, distinct_movieids, "similar", 20)
+   #
+   #  # function 2 algorithm
+   #  rows.append({
+   #      "title": "Shared Credits Overlap",
+   #     "algorithm": "castoverlap",
+   #      "description": "Movies where people contributed that also contributed to your movie",
+   #      "movies":   recommend_cast_overlap(reference_movie_id, limit),
+   # })
+   #
+   #  # function 3 algorithm
+   #  rows.append({
+   #      "title": "Genome Tag Overlap",
+   #      "algorithm": "genome_overlap",
+   #      "description": "???",
+   #      # "movies": recommend_genome_similarity(reference_movie_id, limit),
+   #      "movies": exclude_collection_movies(recommend_genome_similarity(reference_movie_id, limit * 3), collection_movie_ids)[:limit],
+   #  })
+   #
+   #  # function 4 algorithm
+   #  rows.append({
+   #      "title": "Visual Image Similarity",
+   #      "algorithm": "image_similarity",
+   #      "description": "???",
+   #      # "movies": recommend_embedding_similarity(reference_movie_id, limit, "clip-vit-large-patch14"),
+   #      "movies": exclude_collection_movies(recommend_embedding_similarity(reference_movie_id, limit * 3, "clip-vit-large-patch14"), collection_movie_ids)[:limit],
+   #  })
+   #
+   #  rows.append({
+   #      "title": "Visual + Genome Similarity",
+   #      "algorithm": "image_text_similarity",
+   #      "description": "???",
+   #      # "movies": recommend_embedding_similarity(reference_movie_id, limit, "clip-vit-large-patch14-image-genome"),
+   #      "movies": exclude_collection_movies(recommend_embedding_similarity(reference_movie_id, limit * 3, "clip-vit-large-patch14-image-genome"), collection_movie_ids)[:limit],
+   #  })
+   #
+   #  # function 5 algorithm – Elisabeth
+   #  rows.append({
+   #      "title": "Recommendations based on subtitles",
+   #      "algorithm": "subtitles",
+   #      "movies":  exclude_collection_movies(recommend_by_subtitles(reference_movie_id, limit), collection_movie_ids)[:limit],
+   #  })
+   #
+   #  # function 6 algorithm –  Hybrid
+   #
+   #  # collection – only append if the reference movie is part of a collection
+   #  collection_movies = recommend_by_collection(reference_movie_id, limit)
+   #
+   #  if collection_movies:
+   #      rows.append({
+   #          "title": "Have you seen these?",
+   #          "algorithm": "collection",
+   #          "description": "???",
+   #          "movies": collection_movies,
+   #      })
+   #
+   #  distinct_movieids = get_distinct_movieids_for_eval(rows)
+   #  evaluate_using_tmdb(reference_movie_id, distinct_movieids, "recommendations", 20)
+   #  evaluate_using_tmdb(reference_movie_id, distinct_movieids, "similar", 20)
 
     return rows
 
