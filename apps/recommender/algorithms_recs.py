@@ -13,6 +13,10 @@ from apps.recommender.cast_overlap import CastOverlapRecommender
 from apps.recommender.algorithms.rec_subtitles import SubtitleRecommender
 from apps.recommender.tmdb_similarity_eval import evaluate_using_tmdb
 from apps.recommender.algorithms.nnMethod import recommend_item_knn
+
+SKIP_EVAL = True
+RECOMMEND_SAME_COLLECTION = False
+
 #
 # helper functions
 #
@@ -59,6 +63,53 @@ def timing_decorator(func):
 def exclude_collection_movies(movies, excluded_movie_ids):
     return [movie for movie in movies if movie.movie_id not in excluded_movie_ids]
 
+def evaluate_algorithm(our_movies, tmdb_movies, algorithm_name):
+    if SKIP_EVAL: return our_movies
+    # check which of those movies are in the tmdb_recommendations
+    our_movie_ids = set()
+    tmdb_movie_ids = set()
+
+    for movie in our_movies:
+        if hasattr(movie, 'movie_id'):
+            our_movie_ids.add(movie.movie_id)
+        elif isinstance(movie, dict) and "movie_id" in movie:
+            our_movie_ids.add(movie["movie_id"])
+
+    for movie in tmdb_movies:
+        if hasattr(movie, 'movie_id'):
+            tmdb_movie_ids.add(movie.movie_id)
+        elif isinstance(movie, dict) and "movie_id" in movie:
+            tmdb_movie_ids.add(movie["movie_id"])
+
+    # Calculate overlap between our recommendations and TMDB baseline
+    overlap_ids = our_movie_ids.intersection(tmdb_movie_ids)
+    overlap_count = len(overlap_ids)
+
+    # Identify unique recommendations
+    unique_to_our_algo = our_movie_ids - tmdb_movie_ids
+
+    evaluation_result = {
+        "our_algorithm_count": len(our_movie_ids),
+        "tmdb_baseline_count": len(tmdb_movie_ids),
+        "overlap_count": overlap_count,
+        "overlap_rate": round(overlap_count / min(len(our_movie_ids), len(tmdb_movie_ids)),
+                              4) if our_movie_ids and tmdb_movie_ids else 0,
+        "unique_to_algorithm": len(unique_to_our_algo),
+        "overlap_movie_ids": list(overlap_ids)[:10],
+        "algorithm_only_movie_ids": list(unique_to_our_algo)[:10],
+    }
+
+    # Print summary for debugging/evaluation
+    print(f"\n{'=' * 50}")
+    print(f"ALGORITHM EVALUATION {algorithm_name}")
+    print(f"{'=' * 50}")
+    print(f"Our Algorithm Recommendations: {len(our_movie_ids)}")
+    print(f"TMDB Baseline Recommendations: {len(tmdb_movie_ids)}")
+    print(f"Overlap Count: {overlap_count} ({evaluation_result['overlap_rate']:.1%})")
+    print(f"Unique to Our Algorithm: {len(unique_to_our_algo)}")
+    print(f"{'=' * 50}\n")
+    # print overlap count
+    return our_movies
 
 #
 # recommendation functions
@@ -72,9 +123,11 @@ def get_recommendation_rows(reference_movie_id, limit=20):
     '''
 
     # get ids for all movies in the same collection (for excluding them if necessary)
-    recommend_same_collection = False # Variable TODO option make it a toggle
-    if not recommend_same_collection: collection_movie_ids = get_collection_movie_ids(reference_movie_id)
+    if not RECOMMEND_SAME_COLLECTION: collection_movie_ids = get_collection_movie_ids(reference_movie_id)
     else: collection_movie_ids = set()
+
+    tmdb_recommendation_limit = 50 # for eval
+    tmdb_recommendations = recommend_by_tmdb(reference_movie_id, tmdb_recommendation_limit)
 
     # all recommendations
     rows = []
@@ -84,7 +137,7 @@ def get_recommendation_rows(reference_movie_id, limit=20):
         "title": "TMDB API Recommendations",
         "algorithm": "tmdb",
         "description": "TMDB API Recommendations",
-        "movies": recommend_by_tmdb(reference_movie_id, limit),
+        "movies": tmdb_recommendations[:limit],
     })
 
     # TODO - Add Algorithms
@@ -93,7 +146,12 @@ def get_recommendation_rows(reference_movie_id, limit=20):
         "title": "Users who liked this movie also liked",
         "algorithm": "knn",
         "description": "???",
-        "movies": exclude_collection_movies(recommend_item_knn(reference_movie_id, limit), collection_movie_ids)[:limit]
+        "movies":
+                  evaluate_algorithm(
+                    exclude_collection_movies(
+                        call_recommend_item_knn(reference_movie_id, limit),
+                    collection_movie_ids)[:limit],
+                  tmdb_recommendations, "knn")
     })
 
     # function 2 algorithm
@@ -101,7 +159,12 @@ def get_recommendation_rows(reference_movie_id, limit=20):
         "title": "Shared Credits Overlap",
        "algorithm": "castoverlap",
         "description": "Movies where people contributed that also contributed to your movie",
-        "movies":   recommend_cast_overlap(reference_movie_id, limit),
+        "movies":
+            evaluate_algorithm(
+                exclude_collection_movies(
+                    recommend_cast_overlap(reference_movie_id, limit),
+                collection_movie_ids)[:limit],
+            tmdb_recommendations, "cast overlap")
    })
 
     # function 3 algorithm
@@ -110,7 +173,12 @@ def get_recommendation_rows(reference_movie_id, limit=20):
         "algorithm": "genome_overlap",
         "description": "???",
         # "movies": recommend_genome_similarity(reference_movie_id, limit),
-        "movies": exclude_collection_movies(recommend_genome_similarity(reference_movie_id, limit * 3), collection_movie_ids)[:limit],
+        "movies":
+            evaluate_algorithm(
+                exclude_collection_movies(
+                    recommend_genome_similarity(reference_movie_id, limit * 3),
+                collection_movie_ids)[:limit],
+            tmdb_recommendations, "Genome Tag Overlap")
     })
 
     # function 4 algorithm
@@ -119,7 +187,12 @@ def get_recommendation_rows(reference_movie_id, limit=20):
         "algorithm": "image_similarity",
         "description": "???",
         # "movies": recommend_embedding_similarity(reference_movie_id, limit, "clip-vit-large-patch14"),
-        "movies": exclude_collection_movies(recommend_embedding_similarity(reference_movie_id, limit * 3, "clip-vit-large-patch14"), collection_movie_ids)[:limit],
+        "movies":
+            evaluate_algorithm(
+                exclude_collection_movies(
+                    recommend_embedding_similarity(reference_movie_id, limit * 3, "clip-vit-large-patch14"),
+                collection_movie_ids)[:limit],
+            tmdb_recommendations, "Visual Image Similarity")
     })
 
     rows.append({
@@ -127,14 +200,24 @@ def get_recommendation_rows(reference_movie_id, limit=20):
         "algorithm": "image_text_similarity",
         "description": "???",
         # "movies": recommend_embedding_similarity(reference_movie_id, limit, "clip-vit-large-patch14-image-genome"),
-        "movies": exclude_collection_movies(recommend_embedding_similarity(reference_movie_id, limit * 3, "clip-vit-large-patch14-image-genome"), collection_movie_ids)[:limit],
+        "movies":
+            evaluate_algorithm(
+                exclude_collection_movies(
+                    recommend_embedding_similarity(reference_movie_id, limit * 3, "clip-vit-large-patch14-image-genome"),
+                collection_movie_ids)[:limit],
+            tmdb_recommendations, "Visual + Genome Similarity")
     })
 
     # function 5 algorithm – Elisabeth
     rows.append({
         "title": "Recommendations based on subtitles",
         "algorithm": "subtitles",
-        "movies":  exclude_collection_movies(recommend_by_subtitles(reference_movie_id, limit), collection_movie_ids)[:limit],
+        "movies":
+            evaluate_algorithm(
+                exclude_collection_movies(
+                    recommend_by_subtitles(reference_movie_id, limit),
+                collection_movie_ids)[:limit],
+            tmdb_recommendations, "Subtitles")
     })
 
     # function 6 algorithm –  Hybrid
@@ -147,10 +230,12 @@ def get_recommendation_rows(reference_movie_id, limit=20):
             "title": "Have you seen these?",
             "algorithm": "collection",
             "description": "???",
-            "movies": collection_movies,
+            "movies":
+                evaluate_algorithm(
+                    collection_movies,
+                    tmdb_recommendations, "Collection")
         })
 
-    # distinct_movieids = get_distinct_movieids_for_eval(rows)
     # evaluate_using_tmdb(reference_movie_id, distinct_movieids, "recommendations", 20)
     # evaluate_using_tmdb(reference_movie_id, distinct_movieids, "similar", 20)
 
@@ -258,6 +343,10 @@ def recommend_by_tmdb(reference_movie_id, limit=20):
     return matched_movies
 
 @timing_decorator
+def call_recommend_item_knn(reference_movie_id, limit=20):
+    return recommend_item_knn(reference_movie_id, limit)
+
+@timing_decorator
 def recommend_cast_overlap(reference_movie_id, limit=20):
     # TODO: crew, collections
     recommender = CastOverlapRecommender()
@@ -272,7 +361,6 @@ def recommend_cast_overlap(reference_movie_id, limit=20):
             movie_objects.append(movie)
         except Movie.DoesNotExist:
             continue
-
     return movie_objects
 
 
