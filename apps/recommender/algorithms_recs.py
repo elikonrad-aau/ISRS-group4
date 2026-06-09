@@ -10,6 +10,7 @@ from apps.data.models import Movie, MovieLink, MovieMetadata, MovieGenomeProfile
 from apps.recommender.cast_overlap import CastOverlapRecommender
 from apps.recommender.algorithms.rec_subtitles import SubtitleRecommender
 from apps.recommender.tmdb_similarity_eval import evaluate_using_tmdb
+from apps.recommender.algorithms.nnMethod import recommend_item_knn
 #
 # helper functions
 #
@@ -77,14 +78,20 @@ def get_recommendation_rows(reference_movie_id, limit=20):
 
     # TODO - Add Algorithms
     # function 1 algorithm – Elisabeth
+    rows.append({
+        "title": "Users who liked this movie also liked",
+        "algorithm": "knn",
+        "description": "???",
+        "movies": exclude_collection_movies(recommend_item_knn(reference_movie_id, limit), collection_movie_ids)[:limit]
+    })
 
     # function 2 algorithm
     rows.append({
         "title": "Shared Cast Overlap",
-        "algorithm": "tmdb",
+       "algorithm": "castoverlap",
         "description": "???",
-        "movies":  recommend_cast_overlap(reference_movie_id, limit),
-    })
+        "movies":   exclude_collection_movies(recommend_cast_overlap(reference_movie_id, limit), collection_movie_ids)[:limit]
+   })
 
     # function 3 algorithm
     rows.append({

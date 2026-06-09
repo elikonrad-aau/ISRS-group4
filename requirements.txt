@@ -21,3 +21,6 @@ timm
 # subtitles model
 sentence-transformers
 scikit-learn
+
+# Item-Item kNN
+scipy>=1.11.0
