@@ -5,6 +5,8 @@ import json
 import numpy as np
 from django.http import JsonResponse
 from django.conf import settings
+import time
+from functools import wraps
 
 from apps.data.models import Movie, MovieLink, MovieMetadata, MovieGenomeProfile, GenomeRecommendation
 from apps.recommender.cast_overlap import CastOverlapRecommender
@@ -42,7 +44,16 @@ def get_collection_movie_ids(reference_movie_id):
     return set(
         MovieMetadata.objects.filter(belongs_to_collection__icontains=collection_name).values_list("movie__movie_id",
                                                                                                    flat=True))
-
+def timing_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"[TIMING] {func.__name__} took {duration:.3f} seconds")
+        return result
+    return wrapper
 
 # filter for removing movies from the same collection
 def exclude_collection_movies(movies, excluded_movie_ids):
@@ -139,12 +150,11 @@ def get_recommendation_rows(reference_movie_id, limit=20):
             "movies": collection_movies,
         })
 
-    distinct_movieids = get_distinct_movieids_for_eval(rows)
-    evaluate_using_tmdb(reference_movie_id, distinct_movieids, "recommendations", 20)
-    evaluate_using_tmdb(reference_movie_id, distinct_movieids, "similar", 20)
+    # distinct_movieids = get_distinct_movieids_for_eval(rows)
+    # evaluate_using_tmdb(reference_movie_id, distinct_movieids, "recommendations", 20)
+    # evaluate_using_tmdb(reference_movie_id, distinct_movieids, "similar", 20)
 
     return rows
-
 
 def get_distinct_movieids_for_eval(rows):
     distinct_ids = set()
@@ -165,6 +175,7 @@ def get_distinct_movieids_for_eval(rows):
     return distinct_ids
 
 # baseline algorithm – implementation
+@timing_decorator
 def recommend_by_tmdb(reference_movie_id, limit=20):
     token = os.environ.get("TMDB_API_TOKEN")
 
@@ -246,7 +257,7 @@ def recommend_by_tmdb(reference_movie_id, limit=20):
 
     return matched_movies
 
-
+@timing_decorator
 def recommend_cast_overlap(reference_movie_id, limit=20):
     # TODO: crew, collections
     recommender = CastOverlapRecommender()
@@ -265,12 +276,11 @@ def recommend_cast_overlap(reference_movie_id, limit=20):
     return movie_objects
 
 
-
+@timing_decorator
 def recommend_by_subtitles(reference_movie_id, limit = 10):
     recommender = SubtitleRecommender()
     result, error = recommender.get_recommendations(reference_movie_id, limit)
     movie_objects = []
-    print(result)
     for rec in result:
         try:
             if rec is None: continue
@@ -282,7 +292,7 @@ def recommend_by_subtitles(reference_movie_id, limit = 10):
 
     return movie_objects
 
-
+@timing_decorator
 def recommend_genome_similarity(reference_movie_id, limit=20):
     # get precomputed recommendations
     genome_recommendation = (
@@ -323,6 +333,7 @@ def recommend_genome_similarity(reference_movie_id, limit=20):
     return recommendations
 
 # visual / image-text similarity recommender
+@timing_decorator
 def recommend_embedding_similarity(
     reference_movie_id,
     limit=20,
@@ -404,6 +415,7 @@ def recommend_embedding_similarity(
 
 
 # show all movies from the same collection
+@timing_decorator
 def recommend_by_collection(reference_movie_id, limit=20):
     # get the model
     reference_metadata = (MovieMetadata.objects.filter(movie__movie_id=reference_movie_id).first())
