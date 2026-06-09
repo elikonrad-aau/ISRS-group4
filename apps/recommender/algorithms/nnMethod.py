@@ -6,74 +6,81 @@ from scipy.sparse import load_npz
 from apps.data.models import Movie
 
 CACHE_DIR = settings.BASE_DIR / "apps" / "recommender" / "embeddings" / "item_knn"
+KNN_PATH = CACHE_DIR / "knn_model.pkl"
+IDS_PATH = CACHE_DIR / "movie_ids.pkl"
+MATRIX_PATH = CACHE_DIR / "rating_matrix_sparse.npz"
+
+_knn_model = None
+_movie_ids_map = {}  # { 'movie_id_str': index } -> O(1) lookup
+_normalized_ids_list = []  # [ 'id1', 'id2', ... ] -> Index -> ID mapping
+_sparse_matrix = None
+_is_loaded = False
 
 
-def load_db_model():
-    knn_path = CACHE_DIR / "knn_model.pkl"
-    ids_path = CACHE_DIR / "movie_ids.pkl"
-    matrix_path = CACHE_DIR / "rating_matrix_sparse.npz"
+def _ensure_model_loaded():
+    global _knn_model, _movie_ids_map, _normalized_ids_list, _sparse_matrix, _is_loaded
+    if _is_loaded:
+        return
+    try:
+        if not all([KNN_PATH.exists(), IDS_PATH.exists(), MATRIX_PATH.exists()]):
+            raise FileNotFoundError(f"Model files missing in {CACHE_DIR}")
+        _sparse_matrix = load_npz(MATRIX_PATH)
+        with open(KNN_PATH, 'rb') as f:
+            _knn_model = pickle.load(f)
+        with open(IDS_PATH, 'rb') as f:
+            raw_ids = pickle.load(f)
 
-    if not all([knn_path.exists(), ids_path.exists(), matrix_path.exists()]):
-        raise FileNotFoundError(f"Model files missing in {CACHE_DIR}")
+        _normalized_ids_list = [str(x) for x in raw_ids]
+        _movie_ids_map = {mid: idx for idx, mid in enumerate(_normalized_ids_list)}
 
-    with open(knn_path, 'rb') as f:
-        knn_model = pickle.load(f)
-
-    with open(ids_path, 'rb') as f:
-        movie_ids = pickle.load(f)
-
-    if movie_ids and not isinstance(movie_ids[0], str):
-        print(f"WARNING: movie_ids contains {type(movie_ids[0])}s. Converting to strings...")
-        movie_ids = [str(m) for m in movie_ids]
-
-    sparse_matrix = load_npz(matrix_path)
-    return knn_model, movie_ids, sparse_matrix
+        _is_loaded = True
+    except Exception as e:
+        raise e
 
 
 def recommend_item_knn(reference_movie_id, limit=20, top_n_neighbors=50):
+    global _is_loaded
     try:
-        knn_model, movie_ids, sparse_matrix = load_db_model()
-    except FileNotFoundError as e:
-        print(f"CRITICAL: {e}")
-        return []
+        _ensure_model_loaded()
+    except Exception as e:
+        print(f"Model load failed: {e}")
+        return []  # CRITICAL FIX: Return empty list on crash
 
-    # Convert reference ID to STRING to match the loaded list
     ref_id_str = str(reference_movie_id)
 
-    if ref_id_str not in movie_ids:
-        # Fallback: Try integer check just in case
-        ref_id_int = int(reference_movie_id)
-        if ref_id_int in movie_ids:  # This only works if list has ints
-            print("DEBUG: Found via integer match. Converting list to int? No, let's fix the build script.")
-
+    if ref_id_str not in _movie_ids_map:
+        #  prevents crashes if the ID is valid in DB but not in the model yet
         try:
             movie = Movie.objects.get(movie_id=ref_id_str)
-            movie.similarity_score = 0.0
             return []
         except Movie.DoesNotExist:
-            return []
+            return []  # Movie doesn't exist at all
 
-    # Find Index
-    ref_index = movie_ids.index(ref_id_str)
-    # Get the column vector (Users x 1)
-    col_vector = sparse_matrix[:, ref_index]
+    ref_index = _movie_ids_map[ref_id_str]
 
-    # The model was fitted on .T (Movies x Users)
+    col_vector = _sparse_matrix[:, ref_index]
     ref_sample = col_vector.T.tocsr()
-    distances, indices = knn_model.kneighbors(ref_sample, n_neighbors=top_n_neighbors + 1)
+
+    distances, indices = _knn_model.kneighbors(ref_sample, n_neighbors=top_n_neighbors + 1)
     similarities = 1 - distances.flatten()
 
-    # Skip the first one (it's the movie itself)
-    rec_indices = indices.flatten()[1:limit + 1]
-    rec_similarities = similarities[1:limit + 1]
+    actual_count = len(indices[0]) - 1
+    if actual_count == 0:
+        return []
 
-    rec_movie_ids = [movie_ids[i] for i in rec_indices]
+    count_to_take = min(limit, actual_count)
+
+    rec_indices = indices[0, 1: count_to_take + 1]
+    rec_similarities = similarities[1: count_to_take + 1]
+
+    rec_movie_ids = [_normalized_ids_list[i] for i in rec_indices]
+
     movies_qs = Movie.objects.filter(movie_id__in=rec_movie_ids)
     movies_dict = {str(m.movie_id): m for m in movies_qs}
 
     recommendations = []
     for idx, sim in zip(rec_indices, rec_similarities):
-        mid = movie_ids[idx]
+        mid = _normalized_ids_list[idx]
         mid_str = str(mid)
 
         if mid_str in movies_dict:
@@ -81,6 +88,6 @@ def recommend_item_knn(reference_movie_id, limit=20, top_n_neighbors=50):
             movie.similarity_score = float(sim)
             recommendations.append(movie)
         else:
-            print(f"Warning: Movie {mid} found in model but not in DB.")
+            continue
 
     return recommendations
