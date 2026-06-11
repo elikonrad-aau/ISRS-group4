@@ -1,5 +1,4 @@
 {% load static %}
-
 <!--TODO – styling -->
 <div class="modal-content">
     <div class="modal-header" style="background-image: url('{% static 'backdrops/' %}{{ movie.movie_id }}.jpg');">
@@ -26,22 +25,12 @@
                         <input type="checkbox" class="btn-check" id="pref-story" name="preferences" value="story"
                                autocomplete="off">
                         <label class="btn btn-outline-secondary btn-sm btn-round" for="pref-story">
-                            Storyline
+                            Plot
                         </label>
                         <input type="checkbox" class="btn-check" id="pref-cast" name="preferences" value="cast"
                                autocomplete="off">
                         <label class="btn btn-outline-secondary btn-sm btn-round" for="pref-cast">
                             Cast
-                        </label>
-                        <input type="checkbox" class="btn-check" id="pref-era" name="preferences" value="era"
-                               autocomplete="off">
-                        <label class="btn btn-outline-secondary btn-sm btn-round" for="pref-era">
-                            Movie Era
-                        </label>
-                        <input type="checkbox" class="btn-check" id="pref-sounds" name="preferences" value="visuals"
-                               autocomplete="off">
-                        <label class="btn btn-outline-secondary btn-sm btn-round" for="pref-sounds">
-                            Sound and Music
                         </label>
                         <input type="checkbox" class="btn-check" id="pref-mood" name="preferences" value="mood"
                                autocomplete="off">
@@ -74,5 +63,4 @@
             </div>
         </div>
     </div>
-</div>
 </div>

@@ -2,7 +2,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const input = document.getElementById("movie-search-input");
     const resultsBox = document.getElementById("movie-search-results");
     const modalElement = document.getElementById("movie-confirm-modal");
-    const modalContent = modalElement.querySelector(".modal-dialog");
+
+    if (!input || !resultsBox) {
+        return;
+    }
+
+    let modalContent = null;
+    if (modalElement) {
+        modalContent = modalElement.querySelector(".modal-dialog");
+    }
 
     let debounceTimeout = null;
     let selectedMovieId = null;
@@ -37,6 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function openMovieModal(item) {
+        if (!modalElement || !modalContent) {
+            return;
+        }
+
         selectedMovieId = item.dataset.movieId;
 
         const response = await fetch(`/api/movies/${selectedMovieId}/`);
@@ -131,12 +143,14 @@ document.addEventListener("DOMContentLoaded", () => {
         await openMovieModal(item);
     });
 
-    modalElement.addEventListener("hidden.bs.modal", () => {
-        if (lastResultsHtml) {
-            resultsBox.innerHTML = lastResultsHtml;
-            setActiveResult(0);
-        }
-    });
+    if (modalElement) {
+        modalElement.addEventListener("hidden.bs.modal", () => {
+            if (lastResultsHtml) {
+                resultsBox.innerHTML = lastResultsHtml;
+                setActiveResult(0);
+            }
+        });
+    }
 
     document.addEventListener("click", (event) => {
         const button = event.target.closest("#confirm-movie-button");
@@ -148,10 +162,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const movieId = button.dataset.movieId || selectedMovieId;
 
         if (!movieId) {
-            console.error("No movie id found for confirm button.");
             return;
         }
 
-        window.location.href = `/recommendations/?movie_id=${movieId}`;
+        const checkedBoxes = Array.from(document.querySelectorAll('input[name="preferences"]:checked'))
+                                  .map(cb => cb.value);
+        console.log(checkedBoxes)
+        let url = `/recommendations/?movie_id=${movieId}`;
+        checkedBoxes.forEach(pref => {
+            url += `&${pref}=true`;
+        });
+
+        window.location.href = url;
     });
 });

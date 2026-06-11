@@ -114,7 +114,7 @@ def evaluate_algorithm(our_movies, tmdb_movies, algorithm_name):
 #
 # recommendation functions
 #
-def get_recommendation_rows(reference_movie_id, limit=20):
+def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
     '''
     title -> name of the algorithm for the frontend
     algorithm -> slug for the algorithm
@@ -221,6 +221,12 @@ def get_recommendation_rows(reference_movie_id, limit=20):
     })
 
     # function 6 algorithm –  Hybrid
+    rows.append({
+        "title": "Personalized Hybrid Recommendations",
+        "algorithm": "weighted_hybrid",
+        "description": "Combined recommendations weighted by your preferences",
+        "movies": evaluate_algorithm(get_weighted_recommendations(reference_movie_id, user_selection, limit), tmdb_recommendations, "weighted")
+    })
 
     # collection – only append if the reference movie is part of a collection
     collection_movies = recommend_by_collection(reference_movie_id, limit)
@@ -539,3 +545,85 @@ def recommend_by_collection(reference_movie_id, limit=20):
         metadata.movie
         for metadata in collection_movies[:limit]
     ]
+
+
+@timing_decorator
+def get_weighted_recommendations(reference_movie_id, user_selection, limit=20):
+    '''
+     equal weight for all algorithms (base_weight = 1.0)
+    - story=True: subtitles get bonus weight (+0.5)
+    - mood=True: image_similarity gets bonus weight (+0.5)
+    - cast=True: castoverlap gets bonus weight (+0.5)
+    '''
+    # Get collection IDs for exclusion
+    if not RECOMMEND_SAME_COLLECTION:
+        collection_movie_ids = get_collection_movie_ids(reference_movie_id)
+    else:
+        collection_movie_ids = set()
+
+    # Define algorithms with their base weights and user-selectable boost
+    algorithms = [
+        {"function": lambda: call_recommend_item_knn(reference_movie_id, limit * 3),
+         "name": "knn", "base_weight": 1.0, "boost_condition": None, "boost_amount": 0},
+
+        {"function": lambda: recommend_cast_overlap(reference_movie_id, limit * 3),
+         "name": "castoverlap", "base_weight": 1.0, "boost_condition": user_selection["cast"], "boost_amount": 0.5},
+
+        {"function": lambda: recommend_genome_similarity(reference_movie_id, limit * 3),
+         "name": "genome_overlap", "base_weight": 1.0, "boost_condition": None, "boost_amount": 0},
+
+        {"function": lambda: recommend_embedding_similarity(reference_movie_id, limit * 3, "clip-vit-large-patch14"),
+         "name": "image_similarity", "base_weight": 1.0, "boost_condition": user_selection["mood"], "boost_amount": 0.5},
+
+        {"function": lambda: recommend_embedding_similarity(reference_movie_id, limit * 3,
+                                                            "clip-vit-large-patch14-image-genome"),
+         "name": "image_text_similarity", "base_weight": 1.0, "boost_condition": None, "boost_amount": 0},
+
+        {"function": lambda: recommend_by_subtitles(reference_movie_id, limit * 3),
+         "name": "subtitles", "base_weight": 1.0, "boost_condition": user_selection["story"], "boost_amount": 0.5},
+    ]
+
+    # Execute each algorithm and filter out collection movies
+    ranked_lists = []
+    for algo in algorithms:
+        try:
+            raw_results = algo["function"]()
+
+            # FIX 1: Use attribute access (movie.movie_id) instead of dict access (movie['id'])
+            filtered_results = [m for m in raw_results if m.movie_id not in collection_movie_ids]
+
+            weight = algo["base_weight"]
+            if algo["boost_condition"] and user_selection.get(algo["boost_condition"], False):
+                weight += algo["boost_amount"]
+
+            ranked_lists.append({
+                "algorithm": algo["name"],
+                "movies": filtered_results[:limit],  # Store ranked list
+                "weight": weight
+            })
+        except Exception as e:
+            print(f"Warning: Algorithm {algo['name']} failed: {e}")
+            continue
+
+    # Reciprocal Rank Fusion (RRF)
+    # Formula: score = Σ (weight / (k + rank))
+    rrf_scores = {}
+    k = 60  # RRF smoothing parameter
+
+    for ranked_list in ranked_lists:
+        for rank, movie in enumerate(ranked_list["movies"], 1):
+            # FIX 2: Use attribute access (movie.movie_id) instead of dict access (movie["id"])
+            movie_id = movie.movie_id
+
+            if movie_id not in rrf_scores:
+                rrf_scores[movie_id] = {"movie": movie, "score": 0}
+            rrf_scores[movie_id]["score"] += ranked_list["weight"] / (k + rank)
+
+    # Sort by RRF score descending
+    sorted_movies = sorted(
+        rrf_scores.values(),
+        key=lambda x: x["score"],
+        reverse=True
+    )[:limit]
+
+    return [item["movie"] for item in sorted_movies]

@@ -118,8 +118,17 @@ def recommendations(request):
 
     reference_movie = get_object_or_404(Movie, movie_id=reference_movie_id)
 
+    user_selection = {}
+
+    # Check which keys are present in the GET request
+    possible_prefs = ['story', 'cast', 'mood']
+    for pref in possible_prefs:
+        user_selection[pref] = request.GET.get(pref)
+
+    print(user_selection)
     recommendation_rows = get_recommendation_rows(
         reference_movie_id=reference_movie.movie_id,
+        user_selection = user_selection,
         limit=10,
     )
 
