@@ -24,3 +24,6 @@ scikit-learn
 
 # Item-Item kNN
 scipy>=1.11.0
+
+
+django-extensions

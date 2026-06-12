@@ -169,10 +169,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                   .map(cb => cb.value);
         console.log(checkedBoxes)
         let url = `/recommendations/?movie_id=${movieId}`;
-        checkedBoxes.forEach(pref => {
-            url += `&${pref}=true`;
-        });
 
+        params.set("prefs", checkedBoxes.join(","));
         window.location.href = url;
     });
 });

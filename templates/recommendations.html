@@ -7,13 +7,14 @@
 <header class="fixed">
     <nav class="navbar navbar-dark fixed-top py-3">
         <div class="container px-4 d-flex justify-content-between align-items-center">
+
             <div class="d-flex align-items-center gap-3 text-light">
                 <img
-                        class="rounded object-fit-cover"
-                        src="{% static 'posters/' %}{{ reference_movie.movie_id }}.jpg"
-                        alt="{{ reference_movie.display_title }}"
-                        onerror="this.onerror=null; this.src='{% static 'img/placeholder.jpg' %}';"
-                        style="width: 48px; height: 72px;"
+                    class="rounded object-fit-cover"
+                    src="{% static 'posters/' %}{{ reference_movie.movie_id }}.jpg"
+                    alt="{{ reference_movie.display_title }}"
+                    onerror="this.onerror=null; this.src='{% static 'img/placeholder.jpg' %}';"
+                    style="width: 48px; height: 72px;"
                 >
                 <div>
                     <div class="fw-semibold">
@@ -22,149 +23,107 @@
                     {% include "partials/movie_meta.html" with movie=reference_movie %}
                 </div>
             </div>
+
             <a href="/" class="btn btn-outline-light d-flex">
                 Select Different Movie
             </a>
+
         </div>
     </nav>
 </header>
 {% endblock %}
 
+
 {% block content %}
 
-<!--TODO – styling (card layout, hover, ...) -->
-<!--TODO – movie detail modal -->
-<!--TODO – movie detail modal -> select movie as new reference movie button -->
-
-{% for row in recommendation_rows %}
-
-<!--Baseline Recommendations-->
-{% if forloop.first %}
+<!-- HERO: TMDB -->
 <section class="hero-recommendations mb-5">
     <div class="hero-slider" data-slider data-slider-per-view="1">
+
         <button type="button" class="slider-control slider-control-prev" data-slider-prev>
             <i class="bi bi-chevron-left"></i>
         </button>
+
         <div class="hero-slider-viewport">
             <div class="hero-slider-track" data-slider-track>
-                {% for movie in row.movies %}
-                <article
+
+                {% if tmdb_recs and tmdb_recs|length > 0 %}
+                    {% for movie in tmdb_recs %}
+                    <article
                         class="hero-slide"
                         style="background-image: url('{% static 'backdrops/' %}{{ movie.movie_id }}.jpg');"
-                >
-                    <div class="hero-slide-overlay">
-                        <div class="container px-4">
-                            <div class="row align-items-end">
-                                <div class="col-lg-8">
-                                    <h3 class="display-4 mb-3">
-                                        {{ movie.display_title }}
-                                    </h3>
-                                    {% include "partials/movie_meta.html" with movie=movie %}
-                                    {% if movie.metadata.overview %}
-                                    <p class="hero-overview mt-3 mb-0">
-                                        {{ movie.metadata.overview|truncatechars:260 }}
-                                    </p>
-                                    {% endif %}
-                                </div>
-                                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-                                    <button
+                    >
+                        <div class="hero-slide-overlay">
+                            <div class="container px-4">
+                                <div class="row align-items-end">
+
+                                    <div class="col-lg-8">
+                                        <h3 class="display-4 mb-3">
+                                            {{ movie.display_title }}
+                                        </h3>
+
+                                        {% include "partials/movie_meta.html" with movie=movie %}
+
+                                        {% if movie.metadata.overview %}
+                                        <p class="hero-overview mt-3 mb-0">
+                                            {{ movie.metadata.overview|truncatechars:260 }}
+                                        </p>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                                        <button
                                             type="button"
                                             class="btn btn-outline-light"
                                             data-movie-id="{{ movie.movie_id }}"
                                             data-open-movie-details
-                                    >
-                                        More Details
-                                    </button>
+                                        >
+                                            More Details
+                                        </button>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <div class="container py-5 text-light">
+                        <h1>No TMDB recommendations available</h1>
                     </div>
-                </article>
-                {% endfor %}
+                {% endif %}
+
             </div>
         </div>
-        <div class="hero-slider-indicators" data-slider-indicators>
-            {% for movie in row.movies %}
-            <button
-                    type="button"
-                    class="hero-slider-indicator {% if forloop.first %}is-active{% endif %}"
-                    data-slider-indicator
-                    data-slide-index="{{ forloop.counter0 }}"
-                    aria-label="Go to slide {{ forloop.counter }}"
-            ></button>
-            {% endfor %}
-        </div>
+
         <button type="button" class="slider-control slider-control-next" data-slider-next>
             <i class="bi bi-chevron-right"></i>
         </button>
+
     </div>
 </section>
 
-<!-- Custom Recommender Algorithms -->
-{% else %}
-<section class="recommendation-row mb-5">
-    <div class="container px-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">{{ row.title }}
-                {% if row.description %}
-                <button
-                        type="button"
-                        class="info border-0 bg-transparent p-0"
-                        data-bs-toggle="popover"
-                        data-bs-trigger="focus"
-                        data-bs-placement="bottom"
-                        data-bs-content="{{ row.description }}"
-                >
-                    <i class="bi bi-info-circle"></i>
-                </button>
-                {% endif %}
-            </h4>
 
-        </div>
-        <div class="movie-slider" data-slider>
-            <button type="button" class="slider-control slider-control-prev" data-slider-prev>
-                <i class="bi bi-chevron-left"></i>
-            </button>
-            <div class="movie-slider-viewport">
-                <div class="movie-slider-track" data-slider-track>
-                    {% for movie in row.movies %}
-                    <div class="card movie-card d-flex flex-column">
-                        <figure class="movie-card-image">
-                            <img
-                                    class="movie-card-poster"
-                                    src="{% static 'backdrops/' %}{{ movie.movie_id }}.jpg"
-                                    alt="{{ movie.display_title }}"
-                                    loading="lazy"
-                                    onerror="this.onerror=null; this.src='{% static 'img/placeholder.jpg' %}';"
-                            >
-                        </figure>
-                        <div class="movie-card-content p-3">
-                            <h3 class="movie-card-title">
-                                {{ movie.display_title }}
-                            </h3>
-                            {% include "partials/movie_meta.html" with movie=movie %}
-                        </div>
+<!-- OTHER ROWS (ONE URL PER ALGORITHM) -->
+{% for algorithm in algorithms %}
+    {% if algorithm != "tmdb" %}
+        <div
+            hx-get="{% url 'frontend:recommendation-algorithm-row' reference_movie.movie_id algorithm %}?story={{ user_selection.story|default:''|urlencode }}&cast={{ user_selection.cast|default:''|urlencode }}&mood={{ user_selection.mood|default:''|urlencode }}"
+            hx-trigger="load"
+            hx-swap="outerHTML"
+        >
 
-                        <a href="/recommendations/?movie_id={{ movie.movie_id }}"
-                           class="btn btn-outline-primary mx-3 mt-auto mb-3">
-                            Select this movie
-                        </a>
+            <div class="container px-4 py-5 ">
+                <div class="card bg-light text-dark">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm me-3"></div>
+                        Loading {{ algorithm }} recommendations...
                     </div>
-                    {% endfor %}
                 </div>
             </div>
-            <button type="button" class="slider-control slider-control-next" data-slider-next>
-                <i class="bi bi-chevron-right"></i>
-            </button>
         </div>
-    </div>
-</section>
-{% endif %}
 
-{% empty %}
-<div class="container py-5 text-light">
-    <h1>No recommendations available</h1>
-    <p>Try selecting another movie.</p>
-</div>
+    {% endif %}
 {% endfor %}
+
 {% endblock %}

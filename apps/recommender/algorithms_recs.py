@@ -16,7 +16,40 @@ from apps.recommender.algorithms.nnMethod import recommend_item_knn
 
 SKIP_EVAL = True
 RECOMMEND_SAME_COLLECTION = False
-
+ALGORITHM_CONFIG = {
+    "tmdb": {
+        "title": "TMDB API Recommendations",
+        "description": "TMDB API Recommendations",
+    },
+    "knn": {
+        "title": "Users who liked this movie also liked",
+        "description": "???",
+    },
+    "castoverlap": {
+        "title": "Shared Credits Overlap",
+        "description": "Movies where people contributed that also contributed to your movie",
+    },
+    "genome_overlap": {
+        "title": "Genome Tag Overlap",
+        "description": "???",
+    },
+    "image_similarity": {
+        "title": "Visual Image Similarity",
+        "description": "???",
+    },
+    "image_text_similarity": {
+        "title": "Visual + Genome Similarity",
+        "description": "???",
+    },
+    "subtitles": {
+        "title": "Recommendations based on subtitles",
+        "description": "",
+    },
+    "weighted_hybrid": {
+        "title": "Personalized Hybrid Recommendations",
+        "description": "Combined recommendations weighted by your preferences",
+    },
+}
 #
 # helper functions
 #
@@ -111,6 +144,115 @@ def evaluate_algorithm(our_movies, tmdb_movies, algorithm_name):
     # print overlap count
     return our_movies
 
+def get_recommendation_row(
+    algorithm,
+    reference_movie_id,
+    limit=10,
+    user_selection=None
+):
+    user_selection = user_selection or {}
+
+    collection_movie_ids = (
+        get_collection_movie_ids(reference_movie_id)
+        if not RECOMMEND_SAME_COLLECTION
+        else set()
+    )
+
+    tmdb_recommendations = recommend_by_tmdb(
+        reference_movie_id,
+        50,
+    )
+
+    if algorithm == "tmdb":
+        movies = recommend_by_tmdb(reference_movie_id, limit)
+
+    elif algorithm == "knn":
+        movies = exclude_collection_movies(
+            call_recommend_item_knn(reference_movie_id, limit * 3),
+            collection_movie_ids,
+        )[:limit]
+
+    elif algorithm == "castoverlap":
+        movies = exclude_collection_movies(
+            recommend_cast_overlap(reference_movie_id, limit * 3),
+            collection_movie_ids,
+        )[:limit]
+
+    elif algorithm == "genome_overlap":
+        movies = exclude_collection_movies(
+            recommend_genome_similarity(reference_movie_id, limit * 3),
+            collection_movie_ids,
+        )[:limit]
+
+    elif algorithm == "image_similarity":
+        movies = exclude_collection_movies(
+            recommend_embedding_similarity(
+                reference_movie_id,
+                limit * 3,
+                "clip-vit-large-patch14",
+            ),
+            collection_movie_ids,
+        )[:limit]
+
+    elif algorithm == "image_text_similarity":
+        movies = exclude_collection_movies(
+            recommend_embedding_similarity(
+                reference_movie_id,
+                limit * 3,
+                "clip-vit-large-patch14-image-genome",
+            ),
+            collection_movie_ids,
+        )[:limit]
+
+    elif algorithm == "subtitles":
+        movies = exclude_collection_movies(
+            recommend_by_subtitles(
+                reference_movie_id,
+                limit * 3,
+            ),
+            collection_movie_ids,
+        )[:limit]
+
+    elif algorithm == "weighted_hybrid":
+        movies = get_weighted_recommendations(
+            reference_movie_id,
+            user_selection,
+            limit,
+        )
+
+    elif algorithm == "collection":
+        movies = recommend_by_collection(
+            reference_movie_id,
+            limit,
+        )
+
+    else:
+        raise ValueError(f"Unknown algorithm: {algorithm}")
+
+    movies = evaluate_algorithm(
+        movies,
+        tmdb_recommendations,
+        algorithm,
+    )
+
+    config = ALGORITHM_CONFIG[algorithm]
+
+    return {
+        "title": config["title"],
+        "description": config["description"],
+        "algorithm": algorithm,
+        "movies": movies,
+    }
+
+def get_tmdb_recommendation_rows(reference_movie_id, user_selection, limit=20):
+    tmdb_recommendations = recommend_by_tmdb(reference_movie_id, limit)
+
+    return [{
+        "title": "TMDB API Recommendations",
+        "algorithm": "tmdb",
+        "description": "TMDB API Recommendations",
+        "movies": tmdb_recommendations[:limit],
+    }]
 #
 # recommendation functions
 #

@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 from apps.data.models import Movie
-from apps.recommender.algorithms_recs import get_recommendation_rows
+from apps.recommender.algorithms_recs import get_recommendation_rows, get_recommendation_row
 from django.conf import settings
 import os
 import random
@@ -111,28 +111,123 @@ def movie_detail(request, movie_id):
         "movie": movie,
     })
 
+#
+# # recommendations page
+# def recommendations(request):
+#     reference_movie_id = request.GET.get("movie_id")
+#
+#     reference_movie = get_object_or_404(Movie, movie_id=reference_movie_id)
+#
+#     user_selection = {}
+#
+#     # Check which keys are present in the GET request
+#     possible_prefs = ['story', 'cast', 'mood']
+#     for pref in possible_prefs:
+#         user_selection[pref] = request.GET.get(pref)
+#
+#     print(user_selection)
+#     recommendation_rows = get_recommendation_rows(
+#         reference_movie_id=reference_movie.movie_id,
+#         user_selection = user_selection,
+#         limit=10,
+#     )
+#
+#     return render(request, "recommendations.html", {
+#         "reference_movie": reference_movie,
+#         "recommendation_rows": recommendation_rows
+#     })
 
-# recommendations page
+# --------------------------------------------------
+# Recommendations Page
+# --------------------------------------------------
+
 def recommendations(request):
-    reference_movie_id = request.GET.get("movie_id")
+    movie_id = request.GET.get("movie_id")
 
-    reference_movie = get_object_or_404(Movie, movie_id=reference_movie_id)
+    if not movie_id:
+        return JsonResponse(
+            {"error": "movie_id is required"},
+            status=400,
+        )
 
-    user_selection = {}
+    reference_movie = get_object_or_404(
+        Movie,
+        movie_id=movie_id,
+    )
 
-    # Check which keys are present in the GET request
-    possible_prefs = ['story', 'cast', 'mood']
-    for pref in possible_prefs:
-        user_selection[pref] = request.GET.get(pref)
+    user_selection = {
+        "story": request.GET.get("story"),
+        "cast": request.GET.get("cast"),
+        "mood": request.GET.get("mood"),
+    }
 
-    print(user_selection)
-    recommendation_rows = get_recommendation_rows(
-        reference_movie_id=reference_movie.movie_id,
-        user_selection = user_selection,
+    # Load TMDB recommendations for hero section
+    tmdb_row = get_recommendation_row(
+        algorithm="tmdb",
+        reference_movie_id=movie_id,
+        user_selection=user_selection,
         limit=10,
     )
 
-    return render(request, "recommendations.html", {
-        "reference_movie": reference_movie,
-        "recommendation_rows": recommendation_rows,
-    })
+    tmdb_recs = []
+
+    if tmdb_row:
+        tmdb_recs = tmdb_row.get("movies", [])
+
+    return render(
+        request,
+        "recommendations.html",
+        {
+            "reference_movie": reference_movie,
+            "user_selection": user_selection,
+            "tmdb_recs": tmdb_recs,
+            "algorithms": [
+                "tmdb",
+                "knn",
+                "castoverlap",
+                "genome_overlap",
+                "image_similarity",
+                "image_text_similarity",
+                "subtitles",
+                "weighted_hybrid",
+            ],
+        },
+    )
+
+
+
+# --------------------------------------------------
+# HTMX Recommendation Row By Algorithm
+# --------------------------------------------------
+
+def recommendation_algorithm_row(request, movie_id, algorithm):
+    prefs = request.GET.get("prefs", "")
+    user_selection = {
+        "story": "story" in prefs,
+        "cast": "cast" in prefs,
+        "mood": "mood" in prefs,
+    }
+
+    row = get_recommendation_row(
+        algorithm=algorithm,
+        reference_movie_id=movie_id,
+        limit=10,
+        user_selection = user_selection
+    )
+
+    # TODO ADD EVAL
+
+    if not row:
+        row = {
+            "algorithm": algorithm,
+            "title": "No results",
+            "movies": [],
+        }
+
+    return render(
+        request,
+        "partials/recommendation_row.html",
+        {
+            "row": row,
+        },
+    )

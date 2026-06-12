@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'apps.frontend',
     'apps.recommender',
     'apps.data',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
