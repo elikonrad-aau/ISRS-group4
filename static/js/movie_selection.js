@@ -166,11 +166,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const checkedBoxes = Array.from(document.querySelectorAll('input[name="preferences"]:checked'))
-                                  .map(cb => cb.value);
-        console.log(checkedBoxes)
-        let url = `/recommendations/?movie_id=${movieId}`;
+                          .map(cb => cb.value);
 
-        params.set("prefs", checkedBoxes.join(","));
-        window.location.href = url;
+        let url = new URL(`/recommendations/`, window.location.origin);
+        url.searchParams.set("movie_id", movieId);
+
+        if (checkedBoxes.length > 0) {
+            url.searchParams.set("prefs", checkedBoxes.join(","));
+        }
+
+        window.location.href = url.toString();
     });
 });
