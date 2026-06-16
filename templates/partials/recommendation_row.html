@@ -61,12 +61,25 @@
                         <div class="px-3 pb-3 mt-auto d-flex gap-2">
 
 
-                            <a
-                                href="/recommendations/?movie_id={{ movie.movie_id }}"
-                                class="btn btn-outline-primary flex-fill"
-                            >
-                                Select
-                            </a>
+<!--                            <a-->
+<!--                                href="/recommendations/?movie_id={{ movie.movie_id }}"-->
+<!--                                class="btn btn-outline-primary flex-fill"-->
+<!--                            >-->
+<!--                                Select-->
+<!--                            </a>-->
+
+<button
+    type="button"
+    class="btn btn-primary flex-fill"
+
+    hx-get="{% url 'frontend:movie_detail_modal' movie.movie_id %}"
+    hx-target="#movie-detail-modal-content"
+
+    data-bs-toggle="modal"
+    data-bs-target="#movie-detail-modal">
+
+    Movie Details
+</button>
 
                         </div>
 

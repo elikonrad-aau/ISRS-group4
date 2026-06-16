@@ -119,7 +119,8 @@ span.spacer {
 
     background-color: $text-muted;
 
-    #movie-confirm-modal & {
+    #movie-confirm-modal &,
+    #movie-detail-modal &{
         background-color: $gray-600;
     }
 }
@@ -137,6 +138,7 @@ img.poster {
     font-size: $font-size-sm;
 
     #movie-confirm-modal &,
+    #movie-detail-modal &,
     .hero-recommendations & {
         color: $gray-600;
         font-size: $font-size-base;
@@ -193,7 +195,8 @@ img.poster {
 //
 // Movie Confirm Modal
 //
-#movie-confirm-modal {
+#movie-confirm-modal,
+#movie-detail-modal {
     .modal-content {
         .modal-header {
             position: relative;
@@ -482,6 +485,13 @@ button.info {
 
 .mode-switch.is-evaluation .evaluation {
     color: #111;
+}
+
+//
+// Movie Evaluation
+//
+.movie-evaluations {
+    padding-top: 140px;
 }
 
 

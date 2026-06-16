@@ -1,0 +1,30 @@
+{% extends "evaluation.html" %}
+{% load static %}
+
+{% block bodyclass %}evaluation thanks{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+
+<section class="movie-evaluations">
+    <div class="container px-4">
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-5 text-center">
+                <h1 class="mb-3">Thank you!</h1>
+                <p class="text-muted mb-4">
+                    Your evaluation has been saved successfully.
+                </p>
+
+                <a href="/" class="btn btn-primary btn-lg px-5">
+                    Back to Start
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

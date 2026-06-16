@@ -1,0 +1,268 @@
+{% extends "evaluation.html" %}
+{% load static %}
+
+{% block bodyclass %}evaluation step{% endblock %}
+
+{% block content %}
+<section class="movie-evaluations">
+    <div class="container px-4">
+
+        <div class="mb-4">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="fw-semibold text-light">
+                    Movie {{ step|add:1 }} of {{ total_steps }}
+                </span>
+                <span class="text-light">{{ progress }}%</span>
+            </div>
+
+            <div class="progress">
+                <div
+                        class="progress-bar"
+                        role="progressbar"
+                        style="width: {{ progress }}%;"
+                        aria-valuenow="{{ progress }}"
+                        aria-valuemin="0"
+                        aria-valuemax="100">
+                </div>
+            </div>
+        </div>
+
+<form method="post" id="evaluation-step-form">
+    {% csrf_token %}
+
+    <div class="card shadow-sm mb-5 border-0">
+        <div class="card-body p-4">
+
+            <div class="row mb-4 align-items-center">
+                <div class="col-auto">
+                    <img
+                        src="{% static 'posters/' %}{{ movie.movie_id }}.jpg"
+                        onerror="this.onerror=null; this.src='{% static 'img/placeholder.jpg' %}';"
+                        class="rounded object-fit-cover"
+                        style="width: 90px; height: 135px;"
+                        alt="{{ movie.display_title }}"
+                    >
+                </div>
+
+                <div class="col">
+                    <h3 class="mb-1">{{ movie.display_title }}</h3>
+                    {% include "partials/movie_meta.html" with movie=movie %}
+                </div>
+
+                <div class="col d-flex justify-content-end">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#movie-detail-modal">
+                        Movie Details
+                    </button>
+                </div>
+            </div>
+
+            <div class="border-top pt-4 mb-4">
+                <p class="fw-semibold mb-3">
+                    How familiar are you with this movie?
+                </p>
+
+                <div class="btn-group w-100" role="group" aria-label="Movie familiarity">
+                    <input
+                        type="radio"
+                        class="btn-check js-familiarity-control"
+                        name="familiarity"
+                        id="familiarity_watched"
+                        value="watched"
+                        {% if response.familiarity == "watched" %}checked{% endif %}
+                        required>
+                    <label class="btn btn-outline-primary" for="familiarity_watched">
+                        I've watched it
+                    </label>
+
+                    <input
+                        type="radio"
+                        class="btn-check js-familiarity-control"
+                        name="familiarity"
+                        id="familiarity_heard"
+                        value="heard"
+                        {% if response.familiarity == "heard" %}checked{% endif %}>
+                    <label class="btn btn-outline-primary" for="familiarity_heard">
+                        Heard of it, not watched
+                    </label>
+
+                    <input
+                        type="radio"
+                        class="btn-check js-familiarity-control"
+                        name="familiarity"
+                        id="familiarity_unknown"
+                        value="unknown"
+                        {% if response.familiarity == "unknown" %}checked{% endif %}>
+                    <label class="btn btn-outline-primary" for="familiarity_unknown">
+                        Never heard of it
+                    </label>
+                </div>
+            </div>
+
+            <div id="watched-questions" class="d-none">
+                <div class="border-top pt-4 mb-4">
+                    <p class="fw-semibold mb-3">How did you like this movie?</p>
+
+                    <div class="btn-group w-100" role="group" aria-label="Movie rating">
+                        {% for value in "12345" %}
+                        <input
+                            type="radio"
+                            class="btn-check js-watched-question"
+                            name="rating"
+                            id="rating_{{ value }}"
+                            value="{{ value }}"
+                            {% if response.rating == value %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="rating_{{ value }}">
+                            {{ value }}
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between small text-muted mt-2">
+                        <span>Did not like it</span>
+                        <span>Liked it very much</span>
+                    </div>
+                </div>
+
+                <div class="border-top pt-4 mb-4">
+                    <p class="fw-semibold mb-3">How well does it fit the reference movie?</p>
+
+                    <div class="btn-group w-100" role="group" aria-label="Reference fit">
+                        {% for value in "12345" %}
+                        <input
+                            type="radio"
+                            class="btn-check js-watched-question"
+                            name="reference_fit"
+                            id="reference_fit_{{ value }}"
+                            value="{{ value }}"
+                            {% if response.reference_fit == value %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="reference_fit_{{ value }}">
+                            {{ value }}
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between small text-muted mt-2">
+                        <span>Does not fit</span>
+                        <span>Fits very well</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="unwatched-questions" class="d-none">
+                <div class="border-top pt-4 mb-4">
+                    <p class="fw-semibold mb-3">
+                        How likely are you to watch this after the reference movie?
+                    </p>
+
+                    <div class="btn-group w-100" role="group" aria-label="Watch likelihood">
+                        {% for value in "12345" %}
+                        <input
+                            type="radio"
+                            class="btn-check js-unwatched-question"
+                            name="watch_likelihood"
+                            id="watch_likelihood_{{ value }}"
+                            value="{{ value }}"
+                            {% if response.watch_likelihood == value %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="watch_likelihood_{{ value }}">
+                            {{ value }}
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between small text-muted mt-2">
+                        <span>Very unlikely</span>
+                        <span>Very likely</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-top pt-4 mb-4 d-flex justify-content-between">
+                {% if step > 0 %}
+                <button
+                    type="submit"
+                    name="action"
+                    value="previous"
+                    class="btn btn-outline-primary"
+                    formnovalidate>
+                    Previous
+                </button>
+                {% else %}
+                <div></div>
+                {% endif %}
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="next"
+                    class="btn btn-primary">
+                    Next
+                </button>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+    </div>
+</section>
+
+{% endblock %}
+
+
+<!-- Modal Content -->
+{% block modal %}
+<div class="modal fade" id="movie-detail-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        {% include "partials/movie_detail.html" with movie=movie %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const watched = document.getElementById("familiarity_watched");
+    const heard = document.getElementById("familiarity_heard");
+    const unknown = document.getElementById("familiarity_unknown");
+
+    const watchedQuestions = document.getElementById("watched-questions");
+    const unwatchedQuestions = document.getElementById("unwatched-questions");
+
+    const watchedInputs = document.querySelectorAll(".js-watched-question");
+    const unwatchedInputs = document.querySelectorAll(".js-unwatched-question");
+
+    function clearInputs(inputs) {
+        inputs.forEach(function (input) {
+            input.checked = false;
+        });
+    }
+
+    function updateVisibility() {
+        if (watched.checked) {
+            watchedQuestions.classList.remove("d-none");
+            unwatchedQuestions.classList.add("d-none");
+
+            clearInputs(unwatchedInputs);
+        } else if (heard.checked || unknown.checked) {
+            watchedQuestions.classList.add("d-none");
+            unwatchedQuestions.classList.remove("d-none");
+
+            clearInputs(watchedInputs);
+        } else {
+            watchedQuestions.classList.add("d-none");
+            unwatchedQuestions.classList.add("d-none");
+        }
+    }
+
+    watched.addEventListener("change", updateVisibility);
+    heard.addEventListener("change", updateVisibility);
+    unknown.addEventListener("change", updateVisibility);
+
+    updateVisibility();
+});
+</script>
+{% endblock %}

@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         selectedMovieId = item.dataset.movieId;
 
-        const response = await fetch(`/api/movies/${selectedMovieId}/`);
+        const response = await fetch(`/api/movies/${selectedMovieId}/selection/`);
         modalContent.innerHTML = await response.text();
 
         resultsBox.innerHTML = "";

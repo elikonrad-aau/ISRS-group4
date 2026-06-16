@@ -20340,7 +20340,7 @@ span.spacer {
   border-radius: 100%;
   background-color: var(--bs-secondary-color);
 }
-#movie-confirm-modal span.spacer {
+#movie-confirm-modal span.spacer, #movie-detail-modal span.spacer {
   background-color: #6c757d;
 }
 
@@ -20352,7 +20352,7 @@ img.poster {
   color: var(--bs-secondary-color);
   font-size: 0.984375rem;
 }
-#movie-confirm-modal .movie-meta, .hero-recommendations .movie-meta {
+#movie-confirm-modal .movie-meta, #movie-detail-modal .movie-meta, .hero-recommendations .movie-meta {
   color: #6c757d;
   font-size: 1.125rem;
 }
@@ -20386,7 +20386,8 @@ header .movie-meta {
   border-bottom: none;
 }
 
-#movie-confirm-modal .modal-content .modal-header {
+#movie-confirm-modal .modal-content .modal-header,
+#movie-detail-modal .modal-content .modal-header {
   position: relative;
   display: flex;
   align-items: flex-end;
@@ -20396,26 +20397,31 @@ header .movie-meta {
   background-size: cover;
   background-position: center;
 }
-#movie-confirm-modal .modal-content .modal-header::after {
+#movie-confirm-modal .modal-content .modal-header::after,
+#movie-detail-modal .modal-content .modal-header::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.45) 45%, rgba(0, 0, 0, 0) 100%);
 }
-#movie-confirm-modal .modal-content .header-content {
+#movie-confirm-modal .modal-content .header-content,
+#movie-detail-modal .modal-content .header-content {
   position: relative;
   z-index: 1;
   color: #fff;
 }
-#movie-confirm-modal .modal-content .modal-body {
+#movie-confirm-modal .modal-content .modal-body,
+#movie-detail-modal .modal-content .modal-body {
   padding: 2rem 2rem 1rem 2rem;
 }
-#movie-confirm-modal .modal-content .modal-footer {
+#movie-confirm-modal .modal-content .modal-footer,
+#movie-detail-modal .modal-content .modal-footer {
   position: relative;
   border: none;
 }
-#movie-confirm-modal .modal-content .modal-footer button {
+#movie-confirm-modal .modal-content .modal-footer button,
+#movie-detail-modal .modal-content .modal-footer button {
   padding: 0.5rem 1.5rem;
 }
 
@@ -20606,6 +20612,10 @@ button.info {
 
 .mode-switch.is-evaluation .evaluation {
   color: #111;
+}
+
+.movie-evaluations {
+  padding-top: 140px;
 }
 
 .movie-selection {

@@ -24,18 +24,21 @@
                 </small>
             </div>
 
-            <a href="{% if site_mode == 'evaluation' %}
-                        {% url 'frontend:set_mode' 'recommendation' %}
-                     {% else %}
-                        {% url 'frontend:set_mode' 'evaluation' %}
-                     {% endif %}"
-               class="mode-switch {% if site_mode == 'evaluation' %}is-evaluation{% endif %}"
-               aria-label="switch mode">
+<div class="btn-group" role="group">
 
-                <span class="mode-option recommendations">Recommend</span>
-                <span class="mode-option evaluation">Evaluate</span>
-                <span class="mode-slider"></span>
-            </a>
+    <a
+        href="{% url 'frontend:set_mode' 'recommendation' %}"
+        class="btn {% if site_mode != 'evaluation' %}btn-light{% else %}btn-outline-light{% endif %}">
+        Recommend
+    </a>
+
+    <a
+        href="{% url 'frontend:set_mode' 'evaluation' %}"
+        class="btn {% if site_mode == 'evaluation' %}btn-light{% else %}btn-outline-light{% endif %}">
+        Evaluate
+    </a>
+
+</div>
 
         </div>
     </nav>

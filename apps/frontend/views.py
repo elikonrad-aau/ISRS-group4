@@ -1,3 +1,10 @@
+import os
+import random
+import traceback
+import json
+import uuid
+
+from datetime import datetime
 from django.db.models import Q, Avg, Count, Case, When, Value, IntegerField
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -5,9 +12,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from apps.data.models import Movie
 from apps.recommender.algorithms_recs import get_recommendation_rows, get_recommendation_row
 from django.conf import settings
-import os
-import random
-import traceback
+
 
 
 # live search views
@@ -97,7 +102,7 @@ def movie_selection(request):
         return render(request, '500.html', status=500)
 
     # movie selection modal
-def movie_detail(request, movie_id):
+def movie_selection_modal(request, movie_id):
     movie = get_object_or_404(
         Movie.objects
         .annotate(
@@ -108,6 +113,21 @@ def movie_detail(request, movie_id):
     )
 
     return render(request, "partials/movie_selection_modal.html", {
+        "movie": movie,
+    })
+
+    # movie selection modal
+def movie_detail_modal(request, movie_id):
+    movie = get_object_or_404(
+        Movie.objects
+        .annotate(
+            avg_rating=Avg("ratings__rating"),
+            rating_count=Count("ratings"),
+        ),
+        movie_id=movie_id,
+    )
+
+    return render(request, "partials/movie_detail.html", {
         "movie": movie,
     })
 
@@ -265,26 +285,163 @@ def movie_evaluation(request):
         limit=10,
     )
 
+    PER_ALGO_LIMIT = 5
     unique_movies = {}
 
     for row in recommendation_rows:
-        for movie in row.get("movies", []):
-            unique_movies[movie.movie_id] = movie
+        algorithm = row.get("algorithm", "unknown")
+        selected_movies = row.get("movies", [])[:PER_ALGO_LIMIT]
+
+        for rank, movie in enumerate(selected_movies, start=1):
+
+            if movie.movie_id not in unique_movies:
+                unique_movies[movie.movie_id] = {
+                    "movie": movie,
+                    "algorithms": {},
+                }
+
+            unique_movies[movie.movie_id]["algorithms"][algorithm] = rank
 
     movies = list(unique_movies.values())
     random.shuffle(movies)
 
-    evaluation_row = {
-        "algorithm": "evaluation",
-        "title": "All Unique Recommendations",
-        "movies": movies,
-    }
+    evaluation_movies = []
+
+    for item in movies:
+        evaluation_movies.append({
+            "movie_id": item["movie"].movie_id,
+            "algorithms": item["algorithms"],
+        })
+
+    request.session["evaluation_movies"] = evaluation_movies
+    request.session["evaluation_reference_movie_id"] = reference_movie.movie_id
+    request.session["evaluation_responses"] = {}
+
+    return redirect("frontend:evaluation_step", step=0)
+
+
+def evaluation_step(request, step):
+    evaluation_movies = request.session.get("evaluation_movies", [])
+    reference_movie_id = request.session.get("evaluation_reference_movie_id")
+
+    if not evaluation_movies or not reference_movie_id:
+        return redirect("frontend:movie_selection")
+
+    if step >= len(evaluation_movies):
+        return redirect("frontend:evaluation_overall")
+
+    movie_data = evaluation_movies[step]
+    movie = get_object_or_404(Movie, movie_id=movie_data["movie_id"])
+    reference_movie = get_object_or_404(Movie, movie_id=reference_movie_id)
+
+    responses = request.session.get("evaluation_responses", {})
+    movie_id = str(movie.movie_id)
+
+    if request.method == "POST":
+        action = request.POST.get("action", "next")
+
+        familiarity = request.POST.get("familiarity")
+
+        responses[movie_id] = {
+            "movie_id": movie_id,
+            "algorithms": movie_data["algorithms"],
+            "familiarity": familiarity,
+            "rating": request.POST.get("rating") if familiarity == "watched" else None,
+            "reference_fit": request.POST.get("reference_fit") if familiarity == "watched" else None,
+            "watch_likelihood": request.POST.get("watch_likelihood") if familiarity in ["heard", "unknown"] else None,
+        }
+
+        request.session["evaluation_responses"] = responses
+        request.session.modified = True
+
+        if action == "previous":
+            return redirect("frontend:evaluation_step", step=max(0, step - 1))
+
+        return redirect("frontend:evaluation_step", step=step + 1)
+
+    existing_response = responses.get(movie_id, {})
+
+    progress = int(((step + 1) / len(evaluation_movies)) * 100)
+
+    return render(request, "partials/evaluation_step.html", {
+        "reference_movie": reference_movie,
+        "movie": movie,
+        "algorithms": movie_data["algorithms"],
+        "step": step,
+        "total_steps": len(evaluation_movies),
+        "progress": progress,
+        "response": existing_response,
+    })
+
+def evaluation_overall(request):
+    evaluation_movies = request.session.get("evaluation_movies", [])
+    reference_movie_id = request.session.get("evaluation_reference_movie_id")
+
+    if not evaluation_movies or not reference_movie_id:
+        return redirect("frontend:movie_selection")
+
+    reference_movie = get_object_or_404(Movie, movie_id=reference_movie_id)
+
+    movies = []
+
+    for item in evaluation_movies:
+        movie = get_object_or_404(Movie, movie_id=item["movie_id"])
+        movies.append(movie)
 
     return render(
         request,
-        "evaluation.html",
+        "partials/evaluation_overall.html",
         {
             "reference_movie": reference_movie,
-            "row": evaluation_row,
+            "movies": movies,
         },
     )
+
+
+def finish_evaluation(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    reference_movie_id = request.session.get("evaluation_reference_movie_id")
+    responses_dict = request.session.get("evaluation_responses", {})
+
+    responses = []
+
+    for movie_id, response in responses_dict.items():
+        familiarity = response.get("familiarity")
+
+        novelty_score = {
+            "watched": 0,
+            "heard": 1,
+            "unknown": 2,
+        }.get(familiarity)
+
+        response["novelty_score"] = novelty_score
+        responses.append(response)
+
+    payload = {
+        "created_at": datetime.utcnow().isoformat(),
+        "reference_movie_id": reference_movie_id,
+        "responses": responses,
+        "overall": {
+            "fit": request.POST.get("overall_fit"),
+            "diversity": request.POST.get("overall_diversity"),
+            "satisfaction": request.POST.get("overall_satisfaction"),
+            "top_3": request.POST.getlist("top_3"),
+        },
+    }
+
+    folder = os.path.join(settings.BASE_DIR, "evaluation_results")
+    os.makedirs(folder, exist_ok=True)
+
+    filename = f"evaluation_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex}.json"
+    path = os.path.join(folder, filename)
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+
+    request.session.pop("evaluation_movies", None)
+    request.session.pop("evaluation_reference_movie_id", None)
+    request.session.pop("evaluation_responses", None)
+
+    return render(request, "partials/evaluation_thanks.html")

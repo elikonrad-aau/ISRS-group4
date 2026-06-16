@@ -72,14 +72,18 @@
                                     </div>
 
                                     <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-light"
-                                            data-movie-id="{{ movie.movie_id }}"
-                                            data-open-movie-details
-                                        >
-                                            More Details
-                                        </button>
+<button
+    type="button"
+    class="btn btn-outline-light"
+
+    hx-get="{% url 'frontend:movie_detail_modal' movie.movie_id %}"
+    hx-target="#movie-detail-modal-content"
+
+    data-bs-toggle="modal"
+    data-bs-target="#movie-detail-modal">
+
+    Movie Details
+</button>
                                     </div>
 
                                 </div>
@@ -126,4 +130,18 @@
     {% endif %}
 {% endfor %}
 
+{% endblock %}
+
+<!-- Modal Content -->
+{% block modal %}
+<div class="modal fade"
+     id="movie-detail-modal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div id="movie-detail-modal-content"></div>
+    </div>
+
+</div>
 {% endblock %}

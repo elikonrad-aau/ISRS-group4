@@ -1,0 +1,35 @@
+{% load static %}
+<!--TODO – styling -->
+<div class="modal-content">
+    <div class="modal-header" style="background-image: url('{% static 'backdrops/' %}{{ movie.movie_id }}.jpg');">
+        <div class="header-content">
+            <h2>{{ movie.display_title }}</h2>
+            {% include "partials/movie_meta.html" %}
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-7">
+                {% if movie.metadata.overview %}
+                <h3 class="h6 mb-3">Movie Summary</h3>
+                <p class="line-clamp">
+                    {{ movie.metadata.overview }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="row w-100 justify-content-end">
+            <div class="col-2 d-flex justify-content-end">
+                <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        data-bs-dismiss="modal"
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
