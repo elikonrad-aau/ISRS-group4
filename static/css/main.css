@@ -20361,7 +20361,7 @@ header .movie-meta {
 }
 
 .movie-search {
-  padding-top: 140px;
+  padding-top: 40px;
 }
 
 .search-wrapper .search-results {
@@ -20645,7 +20645,7 @@ button.info {
 .movie-selection .movie-search {
   position: relative;
   z-index: 2;
-  padding-top: 40px;
+  padding-top: 120px;
   width: 100%;
 }
 
