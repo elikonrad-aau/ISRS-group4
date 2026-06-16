@@ -50,16 +50,27 @@
                         class="btn btn-outline-primary"
                         data-bs-dismiss="modal"
                 >
-                    Choose another movie
+                    Choose Another Movie
                 </button>
-                <button
-                        type="button"
-                        id="confirm-movie-button"
-                        class="btn btn-primary"
-                        data-movie-id="{{ movie.movie_id }}"
-                >
-                    Use this movie
-                </button>
+{% if site_mode == "evaluation" %}
+    <button
+        type="button"
+        id="evaluate-movie-button"
+        class="btn btn-primary"
+        data-movie-id="{{ movie.movie_id }}"
+    >
+        Evaluate Movie
+    </button>
+{% else %}
+    <button
+        type="button"
+        id="confirm-movie-button"
+        class="btn btn-primary"
+        data-movie-id="{{ movie.movie_id }}"
+    >
+        Use this movie
+    </button>
+{% endif %}
             </div>
         </div>
     </div>

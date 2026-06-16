@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>{% extends "base.html" %}
+{% load static %}
+
+{% block bodyclass %}results{% endblock %}
+
+{% block header %}
+<header class="fixed">
+    <nav class="navbar navbar-dark fixed-top py-3">
+        <div class="container px-4 d-flex justify-content-between align-items-center">
+
+            <div class="d-flex align-items-center gap-3 text-light">
+                <img
+                    class="rounded object-fit-cover"
+                    src="{% static 'posters/' %}{{ reference_movie.movie_id }}.jpg"
+                    alt="{{ reference_movie.display_title }}"
+                    onerror="this.onerror=null; this.src='{% static 'img/placeholder.jpg' %}';"
+                    style="width: 48px; height: 72px;"
+                >
+                <div>
+                    <div class="fw-semibold">
+                        {{ reference_movie.display_title }}
+                    </div>
+                    {% include "partials/movie_meta.html" with movie=reference_movie %}
+                </div>
+            </div>
+
+            <a href="/" class="btn btn-outline-light d-flex">
+                Select Different Movie
+            </a>
+
+        </div>
+    </nav>
+</header>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+    <h1 class="mb-4">
+        Evaluation for {{ reference_movie.display_title }}
+    </h1>
+
+    {% include "partials/evaluation_row.html" with row=row %}
+
+</div>
+
+{% endblock %}

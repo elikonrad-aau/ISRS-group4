@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const checkedBoxes = Array.from(document.querySelectorAll('input[name="preferences"]:checked'))
-                          .map(cb => cb.value);
+            .map(cb => cb.value);
 
         let url = new URL(`/recommendations/`, window.location.origin);
         url.searchParams.set("movie_id", movieId);
@@ -176,5 +176,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         window.location.href = url.toString();
+    });
+
+    document.addEventListener("click", (event) => {
+        const button = event.target.closest("#evaluate-movie-button");
+
+        if (!button) {
+            return;
+        }
+
+        const movieId = button.dataset.movieId || selectedMovieId;
+
+        if (!movieId) {
+            return;
+        }
+
+        window.location.href = `/evaluation/?movie_id=${movieId}`;
     });
 });

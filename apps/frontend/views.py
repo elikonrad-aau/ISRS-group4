@@ -1,6 +1,6 @@
 from django.db.models import Q, Avg, Count, Case, When, Value, IntegerField
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from apps.data.models import Movie
 from apps.recommender.algorithms_recs import get_recommendation_rows, get_recommendation_row
@@ -231,5 +231,61 @@ def recommendation_algorithm_row(request, movie_id, algorithm):
         "partials/recommendation_row.html",
         {
             "row": row,
+        },
+    )
+
+
+
+
+### evaluation
+
+def set_mode(request, mode):
+    if mode in ["recommendation", "evaluation"]:
+        request.session["mode"] = mode
+
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+def movie_evaluation(request):
+    movie_id = request.GET.get("movie_id")
+
+    if not movie_id:
+        return JsonResponse({"error": "movie_id is required"}, status=400)
+
+    reference_movie = get_object_or_404(Movie, movie_id=movie_id)
+
+    user_selection = {
+        "story": request.GET.get("story"),
+        "cast": request.GET.get("cast"),
+        "mood": request.GET.get("mood"),
+    }
+
+    recommendation_rows = get_recommendation_rows(
+        reference_movie_id=movie_id,
+        user_selection=user_selection,
+        limit=10,
+    )
+
+    unique_movies = {}
+
+    for row in recommendation_rows:
+        for movie in row.get("movies", []):
+            unique_movies[movie.movie_id] = movie
+
+    movies = list(unique_movies.values())
+    random.shuffle(movies)
+
+    evaluation_row = {
+        "algorithm": "evaluation",
+        "title": "All Unique Recommendations",
+        "movies": movies,
+    }
+
+    return render(
+        request,
+        "evaluation.html",
+        {
+            "reference_movie": reference_movie,
+            "row": evaluation_row,
         },
     )

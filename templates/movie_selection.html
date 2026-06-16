@@ -2,34 +2,75 @@
 
 {% block bodyclass %} selection{% endblock %}
 
-{% block content %}
-    <main class="movie-selection" style="min-height: 100vh; height: 100vh;">
-        <!-- Background Layer -->
-        {% if background_image %}
-        <div class="movie-bg-layer" style="background-image: url('{{ background_image }}');"></div>
-        {% endif %}
+{% block header %}
+<header class="fixed">
+    <nav class="navbar navbar-dark fixed-top py-3">
+        <div class="container px-4 d-flex justify-content-between align-items-center">
 
-        <section class="movie-search">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-6">
-                        <div class="search-wrapper">
-                            <h1>Find movies to watch</h1>
-                            <input id="movie-search-input" class="form-control form-control-lg" type="text" placeholder="Enter your favorite movie..." autocomplete="off">
-                            <div id="movie-search-results" class="search-results"></div>
-                        </div>
+            <div class="text-light">
+                <div class="">
+                    {% if site_mode == "evaluation" %}
+                        Evaluation Mode Active
+                    {% else %}
+                        Recommendation Mode Active
+                    {% endif %}
+                </div>
+                <small class="text-light opacity-50">
+                    {% if site_mode == "evaluation" %}
+                        Switch to Recommendation mode to get recommendations.
+                    {% else %}
+                        Switch to Evaluation mode to evaluate recommendations.
+                    {% endif %}
+                </small>
+            </div>
+
+            <a href="{% if site_mode == 'evaluation' %}
+                        {% url 'frontend:set_mode' 'recommendation' %}
+                     {% else %}
+                        {% url 'frontend:set_mode' 'evaluation' %}
+                     {% endif %}"
+               class="mode-switch {% if site_mode == 'evaluation' %}is-evaluation{% endif %}"
+               aria-label="switch mode">
+
+                <span class="mode-option recommendations">Recommend</span>
+                <span class="mode-option evaluation">Evaluate</span>
+                <span class="mode-slider"></span>
+            </a>
+
+        </div>
+    </nav>
+</header>
+{% endblock %}
+
+{% block content %}
+<main class="movie-selection" style="min-height: 100vh; height: 100vh;">
+    <!-- Background Layer -->
+    {% if background_image %}
+    <div class="movie-bg-layer" style="background-image: url('{{ background_image }}');"></div>
+    {% endif %}
+
+    <section class="movie-search">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-6">
+                    <div class="search-wrapper">
+                        <h1>Find movies to watch</h1>
+                        <input id="movie-search-input" class="form-control form-control-lg" type="text"
+                               placeholder="Enter your favorite movie..." autocomplete="off">
+                        <div id="movie-search-results" class="search-results"></div>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
+</main>
 {% endblock %}
 
 {% block modal %}
-    <div class="modal fade" id="movie-confirm-modal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <!-- Load Modal -->
-        </div>
+<div class="modal fade" id="movie-confirm-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <!-- Load Modal -->
     </div>
+</div>
 {% endblock %}
 

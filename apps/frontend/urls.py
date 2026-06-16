@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import movie_selection, movie_search, movie_detail, recommendations, recommendation_algorithm_row
+from .views import movie_selection, movie_search, movie_detail, recommendations, recommendation_algorithm_row, movie_evaluation, set_mode
 
 app_name = "frontend"
 
@@ -13,5 +13,7 @@ urlpatterns = [
         recommendation_algorithm_row,
         name="recommendation-algorithm-row",
     ),
+    path("evaluation/", movie_evaluation, name="movie_evaluation"),
+    path("mode/<str:mode>/", set_mode, name="set_mode"),
 
 ]

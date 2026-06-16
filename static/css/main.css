@@ -20361,7 +20361,7 @@ header .movie-meta {
 }
 
 .movie-search {
-  padding-top: 40px;
+  padding-top: 140px;
 }
 
 .search-wrapper .search-results {
@@ -20550,6 +20550,62 @@ button.info {
 
 .slider-control-next {
   right: 0.5rem;
+}
+
+.mode-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 220px;
+  height: 42px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  text-decoration: none;
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.mode-option {
+  position: relative;
+  z-index: 2;
+  width: 50%;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.mode-slider {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  border-radius: 999px;
+  background: white;
+  transition: left 0.2s ease;
+}
+
+.mode-switch .recommendations {
+  color: #111;
+}
+
+.mode-switch .evaluation {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mode-switch.is-evaluation .mode-slider {
+  left: 50%;
+}
+
+.mode-switch.is-evaluation .recommendations {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.mode-switch.is-evaluation .evaluation {
+  color: #111;
 }
 
 .movie-selection {

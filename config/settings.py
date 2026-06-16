@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-x7k$%qf3-ltze(td2-eg(9!8rar11t=97sij%=%se_3oh0ber4
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 INSTALLED_APPS = [
@@ -64,13 +62,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.frontend.context_processors.site_mode',
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -92,7 +90,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -111,7 +108,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
@@ -123,16 +119,15 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    ("posters", BASE_DIR / "dataset" / "tmdb" /"posters"),
+    ("posters", BASE_DIR / "dataset" / "tmdb" / "posters"),
     ("backdrops", BASE_DIR / "dataset" / "tmdb" / "main_backdrops"),
 ]
 
-EMBEDDINGS_PATH = BASE_DIR / "static" / "models" / "subtitles_model_total" # path for subtitles model
+EMBEDDINGS_PATH = BASE_DIR / "static" / "models" / "subtitles_model_total"  # path for subtitles model
 # (total: total files, "subtitles_model" - embeddings only first 256 tokens of subtitle files)
