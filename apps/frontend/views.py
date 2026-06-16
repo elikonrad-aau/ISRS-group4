@@ -238,7 +238,6 @@ def recommendation_algorithm_row(request, movie_id, algorithm):
 
 
 ### evaluation
-
 def set_mode(request, mode):
     if mode in ["recommendation", "evaluation"]:
         request.session["mode"] = mode
