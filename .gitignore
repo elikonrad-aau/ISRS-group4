@@ -43,3 +43,5 @@ apps/recommender/embeddings/**/movie_embeddings.npy
 apps/recommender/embeddings/**/movie_ids.json
 
 apps/recommender/embeddings/movie_overlaps_lookup.pkl
+/static/models
+/apps/recommender/embeddings/item_knn
