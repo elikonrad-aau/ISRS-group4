@@ -216,6 +216,8 @@ def recommendation_algorithm_row(request, movie_id, algorithm):
     )
 
     # TODO ADD EVAL
+    if algorithm != "tmdb":
+        print("EVAL for " + algorithm)
 
     if not row:
         row = {

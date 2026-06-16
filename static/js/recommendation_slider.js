@@ -1,69 +1,133 @@
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("[data-slider]").forEach((slider) => {
-        const track = slider.querySelector("[data-slider-track]");
-        const prevButton = slider.querySelector("[data-slider-prev]");
-        const nextButton = slider.querySelector("[data-slider-next]");
-        const indicators = Array.from(slider.querySelectorAll("[data-slider-indicator]"));
+function initSlider(slider) {
+    if (slider.dataset.sliderInitialized === "true") {
+        return;
+    }
 
-        let index = 0;
+    slider.dataset.sliderInitialized = "true";
 
-        function getCardsPerView() {
-            return Number(slider.dataset.sliderPerView || 3);
+    const track = slider.querySelector("[data-slider-track]");
+    const prevButton = slider.querySelector("[data-slider-prev]");
+    const nextButton = slider.querySelector("[data-slider-next]");
+    const indicators = Array.from(
+        slider.querySelectorAll("[data-slider-indicator]")
+    );
+
+    if (!track) {
+        return;
+    }
+
+    let index = 0;
+
+    function getCardsPerView() {
+        return Number(slider.dataset.sliderPerView || 3);
+    }
+
+    function updateSlider() {
+        const items = Array.from(track.children);
+        const item = items[0];
+
+        if (!item) {
+            return;
         }
 
-        function updateSlider() {
-            const items = Array.from(track.children);
-            const item = items[0];
+        const gap =
+            parseFloat(getComputedStyle(track).gap) || 0;
 
-            if (!item) {
-                return;
-            }
+        const itemWidth =
+            item.getBoundingClientRect().width;
 
-            const gap = parseFloat(getComputedStyle(track).gap) || 0;
-            const itemWidth = item.getBoundingClientRect().width;
-            const step = itemWidth + gap;
+        const step = itemWidth + gap;
 
-            const maxIndex = Math.max(0, items.length - getCardsPerView());
+        const maxIndex = Math.max(
+            0,
+            items.length - getCardsPerView()
+        );
 
-            index = Math.max(0, Math.min(index, maxIndex));
+        index = Math.max(
+            0,
+            Math.min(index, maxIndex)
+        );
 
-            track.style.transform = `translateX(${-index * step}px)`;
+        track.style.transform = `translateX(${-index * step}px)`;
 
-            if (prevButton) {
-                prevButton.disabled = index === 0;
-            }
-
-            if (nextButton) {
-                nextButton.disabled = index === maxIndex;
-            }
-
-            indicators.forEach((indicator, indicatorIndex) => {
-                indicator.classList.toggle(
-                    "is-active",
-                    indicatorIndex === index
-                );
-            });
+        if (prevButton) {
+            prevButton.disabled = index === 0;
         }
 
-        nextButton?.addEventListener("click", () => {
-            index += 1;
-            updateSlider();
+        if (nextButton) {
+            nextButton.disabled = index === maxIndex;
+        }
+
+        indicators.forEach((indicator, indicatorIndex) => {
+            indicator.classList.toggle(
+                "is-active",
+                indicatorIndex === index
+            );
         });
+    }
 
-        prevButton?.addEventListener("click", () => {
-            index -= 1;
-            updateSlider();
-        });
-
-        indicators.forEach((indicator) => {
-            indicator.addEventListener("click", () => {
-                index = Number(indicator.dataset.slideIndex);
-                updateSlider();
-            });
-        });
-
-        window.addEventListener("resize", updateSlider);
-
+    prevButton?.addEventListener("click", () => {
+        index--;
         updateSlider();
     });
+
+    nextButton?.addEventListener("click", () => {
+        index++;
+        updateSlider();
+    });
+
+    indicators.forEach((indicator) => {
+        indicator.addEventListener("click", () => {
+            index = Number(
+                indicator.dataset.slideIndex || 0
+            );
+            updateSlider();
+        });
+    });
+
+    window.addEventListener("resize", updateSlider);
+
+    updateSlider();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    document
+        .querySelectorAll("[data-slider]")
+        .forEach(initSlider);
+});
+
+document.body.addEventListener("htmx:load", (event) => {
+    const root = event.detail.elt;
+
+    if (root.matches?.("[data-slider]")) {
+        initSlider(root);
+    }
+
+    root
+        .querySelectorAll?.("[data-slider]")
+        .forEach(initSlider);
+});
+
+function initPopovers(root = document) {
+    const popoverTriggerList = root.querySelectorAll(
+        '[data-bs-toggle="popover"]'
+    );
+
+    popoverTriggerList.forEach((el) => {
+        if (el.dataset.popoverInitialized) {
+            return;
+        }
+
+        el.dataset.popoverInitialized = "true";
+
+        new bootstrap.Popover(el);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    initPopovers();
+});
+
+document.body.addEventListener("htmx:load", (event) => {
+    initPopovers(event.detail.elt);
 });

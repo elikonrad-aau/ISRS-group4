@@ -43,7 +43,7 @@ ALGORITHM_CONFIG = {
     },
     "subtitles": {
         "title": "Recommendations based on subtitles",
-        "description": "",
+        "description": "Movies with similar plot based on the subtitles",
     },
     "weighted_hybrid": {
         "title": "Personalized Hybrid Recommendations",
