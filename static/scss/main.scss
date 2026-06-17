@@ -134,6 +134,13 @@ header.fixed {
     overflow: hidden;
 }
 
+.genre-clamp {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .btn-round {
     border-radius: 2rem;
     padding: .25rem 1.25rem;
@@ -205,6 +212,7 @@ img.poster {
             margin: 0;
         }
     }
+
 }
 
 

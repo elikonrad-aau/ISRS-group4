@@ -351,9 +351,17 @@ def evaluation_step(request, step):
             "movie_id": movie_id,
             "algorithms": movie_data["algorithms"],
             "familiarity": familiarity,
-            "rating": request.POST.get("rating") if familiarity == "watched" else None,
-            "reference_fit": request.POST.get("reference_fit") if familiarity == "watched" else None,
-            "watch_likelihood": request.POST.get("watch_likelihood") if familiarity in ["heard", "unknown"] else None,
+            "rating": (
+                request.POST.get("rating")
+                if familiarity == "watched"
+                else None
+            ),
+            "relevance": request.POST.get("relevance"),
+            "watch_likelihood": (
+                request.POST.get("watch_likelihood")
+                if familiarity in ["heard", "unknown"]
+                else None
+            ),
         }
 
         request.session["evaluation_responses"] = responses
@@ -377,6 +385,7 @@ def evaluation_step(request, step):
         "progress": progress,
         "response": existing_response,
     })
+
 
 def evaluation_overall(request):
     evaluation_movies = request.session.get("evaluation_movies", [])
@@ -429,10 +438,12 @@ def finish_evaluation(request):
         "reference_movie_id": reference_movie_id,
         "responses": responses,
         "overall": {
-            "fit": request.POST.get("overall_fit"),
+            "relevance": request.POST.get("overall_relevance"),
             "diversity": request.POST.get("overall_diversity"),
             "satisfaction": request.POST.get("overall_satisfaction"),
-            "top_3": request.POST.getlist("top_3"),
+            "trust": request.POST.get("overall_trust"),
+            "usefulness": request.POST.get("overall_usefulness"),
+            "top_5": request.POST.getlist("top_5"),
         },
     }
 

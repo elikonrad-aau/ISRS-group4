@@ -105,7 +105,14 @@ def timing_decorator(func):
 
 # filter for removing movies from the same collection
 def exclude_collection_movies(movies, excluded_movie_ids):
-    return [movie for movie in movies if movie.movie_id not in excluded_movie_ids]
+    if not movies:
+        return []
+
+    return [
+        movie
+        for movie in movies
+        if movie.movie_id not in excluded_movie_ids
+    ]
 
 
 def get_recommendation_row(
@@ -447,6 +454,10 @@ def recommend_by_subtitles(reference_movie_id, limit=10):
     recommender = SubtitleRecommender()
     result, error = recommender.get_recommendations(reference_movie_id, limit)
     movie_objects = []
+
+    if not result:
+        return []
+
     for rec in result:
         try:
             if rec is None: continue
@@ -610,8 +621,9 @@ def recommend_by_collection(reference_movie_id, limit=20):
     collection_movies = (
         MovieMetadata.objects
         .filter(belongs_to_collection__icontains=collection_name)
-        .exclude(movie__movie_id=reference_movie_id)  # exclude the reference movie from the collection
+        .exclude(movie__movie_id=reference_movie_id)
         .select_related("movie")
+        .order_by("-release_date")
     )
 
     return [

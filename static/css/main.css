@@ -20354,6 +20354,13 @@ header.fixed nav.navbar {
   overflow: hidden;
 }
 
+.genre-clamp {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .btn-round {
   border-radius: 2rem;
   padding: 0.25rem 1.25rem;

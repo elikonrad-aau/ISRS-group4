@@ -31,12 +31,12 @@
                 "
             >
                 <a href="{% url 'frontend:set_mode' 'recommendation' %}"
-                   class="btn btn-round {% if site_mode != 'evaluation' %}btn-light{% else %}btn-outline-light{% endif %}">
+                   class="px-4 py-2 btn btn-round {% if site_mode != 'evaluation' %}btn-light{% else %}btn-outline-light{% endif %}">
                     Recommendations
                 </a>
 
                 <a href="{% url 'frontend:set_mode' 'evaluation' %}"
-                   class="btn btn-round {% if site_mode == 'evaluation' %}btn-light{% else %}btn-outline-light{% endif %}">
+                   class="px-4 py-2 btn btn-round {% if site_mode == 'evaluation' %}btn-light{% else %}btn-outline-light{% endif %}">
                     Evaluation
                 </a>
             </div>
@@ -59,9 +59,9 @@
                 <div class="col-6">
                     <div class="search-wrapper">
                         {% if site_mode == 'evaluation' %}
-                            <h1 class="text-light">Evaluate your favorite movie</h1>
+                            <h1 class="text-light">Evaluate Movie Recommendations</h1>
                         {% else %}
-                            <h1 class="text-light">Get movie recommendations</h1>
+                            <h1 class="text-light">Get Movie Recommendations</h1>
                         {% endif %}
 
                         <input id="movie-search-input" class="form-control form-control-lg" type="text"

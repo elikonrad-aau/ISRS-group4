@@ -27,19 +27,19 @@
                                 <input
                                         class="btn-check"
                                         type="checkbox"
-                                        name="top_3"
-                                        id="top_3_{{ movie.movie_id }}"
+                                        name="top_5"
+                                        id="top_5_{{ movie.movie_id }}"
                                         value="{{ movie.movie_id }}">
 
                                 <label
                                         class="btn btn-outline-primary text-start p-3 w-100 h-100"
-                                        for="top_3_{{ movie.movie_id }}">
+                                        for="top_5_{{ movie.movie_id }}">
 
                                     <div class="d-flex gap-3 align-items-start">
 
                                         <img
                                                 src="{% static 'posters/' %}{{ movie.movie_id }}.jpg"
-                                                onerror="this.onerror=null; this.src='{% static 'img/placeholder.jpg' %}';"
+                                                onerror="this.onerror=null; this.src='{% static "img/placeholder.jpg" %}';"
                                                 class="rounded"
                                                 style="width:60px;height:90px;object-fit:cover;"
                                                 alt="{{ movie.display_title }}">
@@ -52,7 +52,6 @@
                                             {% include "partials/movie_meta.html" with movie=movie %}
                                         </div>
 
-
                                     </div>
 
                                 </label>
@@ -64,27 +63,27 @@
 
                     <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
-                            How well do these recommendations fit your selected reference movie?
+                            Overall, how relevant were these recommendations for your selected reference movie?
                         </p>
 
-                        <div class="btn-group w-100" role="group" aria-label="Overall fit">
+                        <div class="btn-group w-100" role="group" aria-label="Overall relevance">
                             {% for value in "12345" %}
                             <input
                                     type="radio"
                                     class="btn-check"
-                                    name="overall_fit"
-                                    id="overall_fit_{{ value }}"
+                                    name="overall_relevance"
+                                    id="overall_relevance_{{ value }}"
                                     value="{{ value }}"
                                     required>
-                            <label class="btn btn-outline-primary" for="overall_fit_{{ value }}">
+                            <label class="btn btn-outline-primary" for="overall_relevance_{{ value }}">
                                 {{ value }}
                             </label>
                             {% endfor %}
                         </div>
 
                         <div class="d-flex justify-content-between small text-muted mt-2">
-                            <span>Does not fit</span>
-                            <span>Fits very well</span>
+                            <span>Not relevant</span>
+                            <span>Very relevant</span>
                         </div>
                     </div>
 
@@ -140,19 +139,71 @@
                         </div>
                     </div>
 
+                    <div class="border-top pt-4 mb-4">
+                        <p class="fw-semibold mb-3">
+                            How much would you trust this recommendation list?
+                        </p>
+
+                        <div class="btn-group w-100" role="group" aria-label="Overall trust">
+                            {% for value in "12345" %}
+                            <input
+                                    type="radio"
+                                    class="btn-check"
+                                    name="overall_trust"
+                                    id="overall_trust_{{ value }}"
+                                    value="{{ value }}"
+                                    required>
+                            <label class="btn btn-outline-primary" for="overall_trust_{{ value }}">
+                                {{ value }}
+                            </label>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-flex justify-content-between small text-muted mt-2">
+                            <span>Do not trust</span>
+                            <span>Trust very much</span>
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-4 mb-4">
+                        <p class="fw-semibold mb-3">
+                            How useful was this list for finding movies you might actually watch?
+                        </p>
+
+                        <div class="btn-group w-100" role="group" aria-label="Overall usefulness">
+                            {% for value in "12345" %}
+                            <input
+                                    type="radio"
+                                    class="btn-check"
+                                    name="overall_usefulness"
+                                    id="overall_usefulness_{{ value }}"
+                                    value="{{ value }}"
+                                    required>
+                            <label class="btn btn-outline-primary" for="overall_usefulness_{{ value }}">
+                                {{ value }}
+                            </label>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-flex justify-content-between small text-muted mt-2">
+                            <span>Not useful</span>
+                            <span>Very useful</span>
+                        </div>
+                    </div>
+
                     <div class="border-top pt-4 mb-4 d-flex justify-content-between">
                         <button
                                 type="submit"
                                 name="action"
                                 value="previous"
-                                class="btn btn-outline-primary"
+                                class="btn btn-outline-primary px-4 py-2"
                                 formnovalidate>
                             Previous
                         </button>
 
                         <button
                                 type="submit"
-                                class="btn btn-primary">
+                                class="btn btn-primary px-4 py-2">
                             Submit Evaluation
                         </button>
                     </div>
@@ -166,17 +217,14 @@
 </section>
 {% endblock %}
 
-
-
-
 {% block javascript %}
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-    const checkboxes = document.querySelectorAll('input[name="top_3"]');
+document.addEventListener("DOMContentLoaded", () => {
+    const checkboxes = document.querySelectorAll('input[name="top_5"]');
 
     checkboxes.forEach(cb => {
         cb.addEventListener("change", () => {
-            const checked = document.querySelectorAll('input[name="top_3"]:checked');
+            const checked = document.querySelectorAll('input[name="top_5"]:checked');
 
             if (checked.length > 5) {
                 cb.checked = false;

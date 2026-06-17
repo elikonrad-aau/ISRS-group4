@@ -24,7 +24,7 @@
                 </div>
             </div>
 
-            <a href="/" class="btn btn-outline-light d-flex">
+            <a href="/" class="btn btn-outline-light d-flex px-4 py-2">
                 Select Different Movie
             </a>
 
@@ -74,7 +74,7 @@
                                     <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
 <button
     type="button"
-    class="btn btn-outline-light"
+    class="btn btn-outline-light px-4 py-2"
 
     hx-get="{% url 'frontend:movie_detail_modal' movie.movie_id %}"
     hx-target="#movie-detail-modal-content"
