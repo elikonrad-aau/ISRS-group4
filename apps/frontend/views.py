@@ -368,7 +368,7 @@ def evaluation_step(request, step):
         "movie": movie,
         "algorithms": movie_data["algorithms"],
         "step": step,
-        "total_steps": len(evaluation_movies),
+        "total_steps": len(evaluation_movies) + 1,
         "progress": progress,
         "response": existing_response,
     })

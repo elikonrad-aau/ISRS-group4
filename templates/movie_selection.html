@@ -5,40 +5,41 @@
 {% block header %}
 <header class="fixed">
     <nav class="navbar navbar-dark fixed-top py-3">
-        <div class="container px-4 d-flex justify-content-between align-items-center">
+        <div class="container px-4 position-relative d-flex align-items-center">
 
-            <div class="text-light">
-                <div class="">
-                    {% if site_mode == "evaluation" %}
-                        Evaluation Mode Active
+            <!-- Centered mode switch -->
+            <div
+                class="btn-group position-absolute top-50 start-50 translate-middle"
+                role="group"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                data-bs-custom-class="mode-tooltip"
+                data-bs-html="true"
+                data-bs-title="
+                    <strong>
+                        {% if site_mode == 'evaluation' %}
+                            Evaluation Mode Active
+                        {% else %}
+                            Recommendation Mode Active
+                        {% endif %}
+                    </strong><br>
+                    {% if site_mode == 'evaluation' %}
+                        Switch to Recommendations to get movie recommendations.
                     {% else %}
-                        Recommendation Mode Active
+                        Switch to Evaluation to evaluate recommendations.
                     {% endif %}
-                </div>
-                <small class="text-light opacity-50">
-                    {% if site_mode == "evaluation" %}
-                        Switch to Recommendation mode to get recommendations.
-                    {% else %}
-                        Switch to Evaluation mode to evaluate recommendations.
-                    {% endif %}
-                </small>
+                "
+            >
+                <a href="{% url 'frontend:set_mode' 'recommendation' %}"
+                   class="btn btn-round {% if site_mode != 'evaluation' %}btn-light{% else %}btn-outline-light{% endif %}">
+                    Recommendations
+                </a>
+
+                <a href="{% url 'frontend:set_mode' 'evaluation' %}"
+                   class="btn btn-round {% if site_mode == 'evaluation' %}btn-light{% else %}btn-outline-light{% endif %}">
+                    Evaluation
+                </a>
             </div>
-
-<div class="btn-group" role="group">
-
-    <a
-        href="{% url 'frontend:set_mode' 'recommendation' %}"
-        class="btn {% if site_mode != 'evaluation' %}btn-light{% else %}btn-outline-light{% endif %}">
-        Recommend
-    </a>
-
-    <a
-        href="{% url 'frontend:set_mode' 'evaluation' %}"
-        class="btn {% if site_mode == 'evaluation' %}btn-light{% else %}btn-outline-light{% endif %}">
-        Evaluate
-    </a>
-
-</div>
 
         </div>
     </nav>
@@ -57,7 +58,12 @@
             <div class="row justify-content-center">
                 <div class="col-6">
                     <div class="search-wrapper">
-                        <h1>Find movies to watch</h1>
+                        {% if site_mode == 'evaluation' %}
+                            <h1 class="text-light">Evaluate your favorite movie</h1>
+                        {% else %}
+                            <h1 class="text-light">Get movie recommendations</h1>
+                        {% endif %}
+
                         <input id="movie-search-input" class="form-control form-control-lg" type="text"
                                placeholder="Enter your favorite movie..." autocomplete="off">
                         <div id="movie-search-results" class="search-results"></div>
@@ -75,5 +81,16 @@
         <!-- Load Modal -->
     </div>
 </div>
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+    new bootstrap.Tooltip(el, {
+        html: true
+    });
+});
+</script>
 {% endblock %}
 

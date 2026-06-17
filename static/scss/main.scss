@@ -6,10 +6,10 @@
 }
 
 html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 // Bootstrap variable overrides
@@ -47,6 +47,12 @@ body {
                 #051828 96%
         );
     }
+
+    &.recommender.selection {
+        footer {
+            display: none;
+        }
+    }
 }
 
 main {
@@ -74,7 +80,32 @@ input.form-control {
 
     &:focus {
         box-shadow: none;
+        border-color: transparent;
     }
+}
+
+.btn-group {
+    display: flex;
+
+    .btn {
+        flex: 1 1 0;
+    }
+}
+
+// Style Browser-Native Scrollbars
+::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    background-color: $primary;
+    border: 2px solid $light;
+}
+
+::-webkit-scrollbar-track {
+    background: $light;
+    border-radius: .5rem;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
 }
 
 
@@ -86,6 +117,7 @@ header.fixed {
     nav.navbar {
         background: rgba(5, 24, 40, 0.75);
         backdrop-filter: blur(20px);
+        min-height: 80px;
     }
 }
 
@@ -120,7 +152,7 @@ span.spacer {
     background-color: $text-muted;
 
     #movie-confirm-modal &,
-    #movie-detail-modal &{
+    #movie-detail-modal & {
         background-color: $gray-600;
     }
 }
@@ -140,12 +172,38 @@ img.poster {
     #movie-confirm-modal &,
     #movie-detail-modal &,
     .hero-recommendations & {
-        color: $gray-600;
+        color: $light;
+        opacity: .65;
         font-size: $font-size-base;
     }
 
-    header & {
-        color: $gray-600;
+    .btn-check:checked + .btn & {
+        color: $light;
+        opacity: .65;
+    }
+
+    header &, {
+        color: $light;
+        opacity: .65;
+        flex-direction: row !important;
+        align-items: center;
+        gap: 1rem !important;
+
+        > div {
+            margin: 0;
+        }
+    }
+
+    article.hero-slide & {
+        color: $light;
+        opacity: .65;
+        flex-direction: row !important;
+        align-items: center;
+        gap: 1.5rem !important;
+
+        > div {
+            margin: 0;
+        }
     }
 }
 
@@ -159,6 +217,7 @@ img.poster {
 
 .search-wrapper {
     .search-results {
+        color: $gray-600;
         margin-top: 1rem;
 
         overflow-y: scroll;
@@ -168,10 +227,7 @@ img.poster {
         background: $white;
 
         &:not(:empty) {
-            max-height: calc(100vh - 200px);
-
-            padding-bottom: .25rem;
-
+            max-height: calc(100vh - 340px);
             border: $border-width solid $border-color;
         }
     }
@@ -188,6 +244,19 @@ img.poster {
         &:last-of-type {
             border-bottom: none;
         }
+    }
+}
+
+.mode-tooltip {
+    --bs-tooltip-max-width: 100%;
+    --bs-tooltip-bg: #{$light};
+    --bs-tooltip-color: #{$primary};
+    --bs-tooltip-bg: #{$light};
+    --bs-tooltip-opacity: 1;
+
+    .tooltip-inner {
+        text-align: left;
+        padding: .75rem 1rem;
     }
 }
 
@@ -438,11 +507,11 @@ button.info {
     width: 220px;
     height: 42px;
     padding: 4px;
-    border: 1px solid rgba(255,255,255,.25);
+    border: 1px solid rgba(255, 255, 255, .25);
     border-radius: 999px;
     text-decoration: none;
     color: white;
-    background: rgba(255,255,255,.08);
+    background: rgba(255, 255, 255, .08);
     overflow: hidden;
 }
 
@@ -472,7 +541,7 @@ button.info {
 }
 
 .mode-switch .evaluation {
-    color: rgba(255,255,255,.7);
+    color: rgba(255, 255, 255, .7);
 }
 
 .mode-switch.is-evaluation .mode-slider {
@@ -480,7 +549,7 @@ button.info {
 }
 
 .mode-switch.is-evaluation .recommendations {
-    color: rgba(255,255,255,.7);
+    color: rgba(255, 255, 255, .7);
 }
 
 .mode-switch.is-evaluation .evaluation {
@@ -503,91 +572,101 @@ button.info {
 $bg-zoom-scale: 1.1;
 $pan-duration: 40s;
 $overlay-opacity: 0.5;
-$search-bg-color: rgba(255, 255, 255, 0.9);
+// $search-bg-color: rgba(255, 255, 255, 0.9);
+$search-bg-color: rgba($primary, 0.65);
 $text-primary: #333;
 $border-color: #ddd;
 $shadow-color: rgba(0, 0, 0, 0.3);
+
 .movie-selection {
-  position: relative;
-  width: 100%;
-
-  // FORCE HEIGHT: Use !important to override any collapsing parents
-  height: 100vh !important;
-  min-height: 100vh !important;
-
-  overflow: hidden;
-  color: white;
-
-  // Animated Background Layer
-  .movie-bg-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-
-    // FORCE HEIGHT HERE TOO
-    height: 100% !important;
-
-    z-index: 0;
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    transform: scale($bg-zoom-scale);
-    transform-origin: center;
-
-    animation: slowPan $pan-duration linear infinite alternate;
-    will-change: transform, background-position;
-  }
-
-  // Dark Overlay
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, $overlay-opacity);
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  // Content Layer
-  .movie-search {
     position: relative;
-    z-index: 2;
-    padding-top: 120px;
     width: 100%;
-  }
+
+    // FORCE HEIGHT: Use !important to override any collapsing parents
+    height: 100vh !important;
+    min-height: 100vh !important;
+
+    overflow: hidden;
+    color: white;
+
+    // Animated Background Layer
+    .movie-bg-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+
+        // FORCE HEIGHT HERE TOO
+        height: 100% !important;
+
+        z-index: 0;
+
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        transform: scale($bg-zoom-scale);
+        transform-origin: center;
+
+        animation: slowPan $pan-duration linear infinite alternate;
+        will-change: transform, background-position;
+    }
+
+    // Dark Overlay
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, $overlay-opacity);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    // Content Layer
+    .movie-search {
+        position: relative;
+        z-index: 2;
+        padding-top: 120px;
+        width: 100%;
+    }
+
 }
 
 // Search Section Styling
 .search-wrapper {
-  background: $search-bg-color;
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px $shadow-color;
+    background: $search-bg-color;
+    backdrop-filter: blur(20px);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px $shadow-color;
+    max-height: calc(100vh - 140px);
+    overflow: hidden;
 
-  h1 {
-    color: $text-primary;
-    margin-bottom: 1.5rem;
-    font-weight: 600;
-  }
-
-  .form-control {
-    border: 2px solid $border-color;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-
-    &:focus {
-      border-color: #0d6efd;
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    h1 {
+        color: $text-primary;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
     }
-  }
+
+    .form-control {
+        border: 2px solid $border-color;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+        //&:focus {
+        //    border-color: #0d6efd;
+        //    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        //}
+    }
 }
 
 @keyframes slowPan {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
 }

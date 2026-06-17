@@ -10,7 +10,7 @@
         <div class="mb-4">
             <div class="d-flex justify-content-between mb-2">
                 <span class="fw-semibold text-light">
-                    Movie {{ step|add:1 }} of {{ total_steps }}
+                    Step {{ step|add:1 }} of {{ total_steps }}
                 </span>
                 <span class="text-light">{{ progress }}%</span>
             </div>
@@ -52,7 +52,7 @@
                 <div class="col d-flex justify-content-end">
                     <button
                         type="button"
-                        class="btn btn-outline-primary"
+                        class="btn btn-primary px-3"
                         data-bs-toggle="modal"
                         data-bs-target="#movie-detail-modal">
                         Movie Details
@@ -75,7 +75,7 @@
                         {% if response.familiarity == "watched" %}checked{% endif %}
                         required>
                     <label class="btn btn-outline-primary" for="familiarity_watched">
-                        I've watched it
+                        I have watched this movie.
                     </label>
 
                     <input
@@ -86,7 +86,7 @@
                         value="heard"
                         {% if response.familiarity == "heard" %}checked{% endif %}>
                     <label class="btn btn-outline-primary" for="familiarity_heard">
-                        Heard of it, not watched
+                        I know about it, but I haven't watched it.
                     </label>
 
                     <input
@@ -97,7 +97,7 @@
                         value="unknown"
                         {% if response.familiarity == "unknown" %}checked{% endif %}>
                     <label class="btn btn-outline-primary" for="familiarity_unknown">
-                        Never heard of it
+                        I am unfamiliar with this movie.
                     </label>
                 </div>
             </div>
@@ -128,7 +128,7 @@
                 </div>
 
                 <div class="border-top pt-4 mb-4">
-                    <p class="fw-semibold mb-3">How well does it fit the reference movie?</p>
+                    <p class="fw-semibold mb-3">How well does it fit your selected reference movie ({{ reference_movie.display_title }})?</p>
 
                     <div class="btn-group w-100" role="group" aria-label="Reference fit">
                         {% for value in "12345" %}
@@ -155,7 +155,7 @@
             <div id="unwatched-questions" class="d-none">
                 <div class="border-top pt-4 mb-4">
                     <p class="fw-semibold mb-3">
-                        How likely are you to watch this after the reference movie?
+                        What are the chances of you watching this movie based on this recommendation?
                     </p>
 
                     <div class="btn-group w-100" role="group" aria-label="Watch likelihood">
@@ -198,8 +198,8 @@
                     type="submit"
                     name="action"
                     value="next"
-                    class="btn btn-primary">
-                    Next
+                    class="btn btn-primary px-5 py-3">
+                    Next Movie
                 </button>
             </div>
 

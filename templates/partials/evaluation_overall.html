@@ -10,50 +10,75 @@
         <form method="post" action="{% url 'frontend:finish_evaluation' %}">
             {% csrf_token %}
 
-            <div class="card shadow-sm border-0 mb-5">
+            <div class="card shadow-sm mb-5 border-0">
                 <div class="card-body p-4">
 
                     <h2 class="mb-4">Overall Evaluation</h2>
 
                     <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
-                            Select your top 3 recommendations from the list:
+                            Select your top 5 recommendations from the list:
                         </p>
 
-                        {% for movie in movies %}
-                        <div class="form-check mb-2">
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                name="top_3"
-                                id="top_3_{{ movie.movie_id }}"
-                                value="{{ movie.movie_id }}">
-                            <label class="form-check-label" for="top_3_{{ movie.movie_id }}">
-                                {{ movie.display_title }}
-                            </label>
+                        <div class="row g-3">
+                            {% for movie in movies %}
+                            <div class="col-md-6">
+
+                                <input
+                                        class="btn-check"
+                                        type="checkbox"
+                                        name="top_3"
+                                        id="top_3_{{ movie.movie_id }}"
+                                        value="{{ movie.movie_id }}">
+
+                                <label
+                                        class="btn btn-outline-primary text-start p-3 w-100 h-100"
+                                        for="top_3_{{ movie.movie_id }}">
+
+                                    <div class="d-flex gap-3 align-items-start">
+
+                                        <img
+                                                src="{% static 'posters/' %}{{ movie.movie_id }}.jpg"
+                                                onerror="this.onerror=null; this.src='{% static 'img/placeholder.jpg' %}';"
+                                                class="rounded"
+                                                style="width:60px;height:90px;object-fit:cover;"
+                                                alt="{{ movie.display_title }}">
+
+                                        <div>
+                                            <div class="fw-semibold mb-1">
+                                                {{ movie.display_title }}
+                                            </div>
+
+                                            {% include "partials/movie_meta.html" with movie=movie %}
+                                        </div>
+
+
+                                    </div>
+
+                                </label>
+
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
 
                     <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
-                            How well do these recommendations fit the reference movie?
+                            How well do these recommendations fit your selected reference movie?
                         </p>
 
-                        <div class="d-flex justify-content-between text-center">
+                        <div class="btn-group w-100" role="group" aria-label="Overall fit">
                             {% for value in "12345" %}
-                            <div class="form-check">
-                                <input
-                                    class="form-check-input"
+                            <input
                                     type="radio"
+                                    class="btn-check"
                                     name="overall_fit"
                                     id="overall_fit_{{ value }}"
                                     value="{{ value }}"
                                     required>
-                                <label class="form-check-label" for="overall_fit_{{ value }}">
-                                    {{ value }}
-                                </label>
-                            </div>
+                            <label class="btn btn-outline-primary" for="overall_fit_{{ value }}">
+                                {{ value }}
+                            </label>
                             {% endfor %}
                         </div>
 
@@ -68,20 +93,18 @@
                             How diverse were the recommendations?
                         </p>
 
-                        <div class="d-flex justify-content-between text-center">
+                        <div class="btn-group w-100" role="group" aria-label="Overall diversity">
                             {% for value in "12345" %}
-                            <div class="form-check">
-                                <input
-                                    class="form-check-input"
+                            <input
                                     type="radio"
+                                    class="btn-check"
                                     name="overall_diversity"
                                     id="overall_diversity_{{ value }}"
                                     value="{{ value }}"
                                     required>
-                                <label class="form-check-label" for="overall_diversity_{{ value }}">
-                                    {{ value }}
-                                </label>
-                            </div>
+                            <label class="btn btn-outline-primary" for="overall_diversity_{{ value }}">
+                                {{ value }}
+                            </label>
                             {% endfor %}
                         </div>
 
@@ -91,25 +114,23 @@
                         </div>
                     </div>
 
-                    <div class="border-top pt-4">
+                    <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
                             How satisfied were you with the recommendations?
                         </p>
 
-                        <div class="d-flex justify-content-between text-center">
+                        <div class="btn-group w-100" role="group" aria-label="Overall satisfaction">
                             {% for value in "12345" %}
-                            <div class="form-check">
-                                <input
-                                    class="form-check-input"
+                            <input
                                     type="radio"
+                                    class="btn-check"
                                     name="overall_satisfaction"
                                     id="overall_satisfaction_{{ value }}"
                                     value="{{ value }}"
                                     required>
-                                <label class="form-check-label" for="overall_satisfaction_{{ value }}">
-                                    {{ value }}
-                                </label>
-                            </div>
+                            <label class="btn btn-outline-primary" for="overall_satisfaction_{{ value }}">
+                                {{ value }}
+                            </label>
                             {% endfor %}
                         </div>
 
@@ -121,16 +142,19 @@
 
                     <div class="border-top pt-4 mb-4 d-flex justify-content-between">
                         <button
-                            type="submit"
-                            name="action"
-                            value="previous"
-                            class="btn btn-outline-primary px-4 py-3"
-                            formnovalidate>
+                                type="submit"
+                                name="action"
+                                value="previous"
+                                class="btn btn-outline-primary"
+                                formnovalidate>
                             Previous
                         </button>
-<button type="submit" class="btn btn-primary px-4 py-3">
-                    Submit Evaluation
-                </button>
+
+                        <button
+                                type="submit"
+                                class="btn btn-primary">
+                            Submit Evaluation
+                        </button>
                     </div>
 
                 </div>
@@ -140,5 +164,25 @@
 
     </div>
 </section>
+{% endblock %}
 
+
+
+
+{% block javascript %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const checkboxes = document.querySelectorAll('input[name="top_3"]');
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener("change", () => {
+            const checked = document.querySelectorAll('input[name="top_3"]:checked');
+
+            if (checked.length > 5) {
+                cb.checked = false;
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
