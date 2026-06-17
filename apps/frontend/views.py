@@ -210,6 +210,7 @@ def recommendations(request):
                 "image_text_similarity",
                 "subtitles",
                 "weighted_hybrid",
+                "collection",
             ],
         },
     )
@@ -279,11 +280,15 @@ def movie_evaluation(request):
         "mood": request.GET.get("mood"),
     }
 
-    recommendation_rows = get_recommendation_rows(
-        reference_movie_id=movie_id,
-        user_selection=user_selection,
-        limit=10,
-    )
+    recommendation_rows = [
+        row
+        for row in get_recommendation_rows(
+            reference_movie_id=movie_id,
+            user_selection=user_selection,
+            limit=10,
+        )
+        if row["algorithm"] != "collection"
+    ]
 
     PER_ALGO_LIMIT = 5
     unique_movies = {}

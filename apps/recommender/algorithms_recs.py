@@ -12,6 +12,10 @@ from apps.recommender.cast_overlap import CastOverlapRecommender
 from apps.recommender.algorithms.rec_subtitles import SubtitleRecommender
 from apps.recommender.algorithms.nnMethod import recommend_item_knn
 
+# save limit
+limit_default = 10
+save_limit = limit_default * 3
+
 RECOMMEND_SAME_COLLECTION = False
 ALGORITHM_CONFIG = {
     "tmdb": {
@@ -45,6 +49,10 @@ ALGORITHM_CONFIG = {
     "weighted_hybrid": {
         "title": "Personalized Hybrid Recommendations",
         "description": "Combined recommendations weighted by your preferences",
+    },
+    "collection": {
+        "title": "Have you seen these?",
+        "description": "Movies from the same collection",
     },
 }
 
@@ -103,7 +111,7 @@ def exclude_collection_movies(movies, excluded_movie_ids):
 def get_recommendation_row(
         algorithm,
         reference_movie_id,
-        limit=10,
+        limit=limit_default,
         user_selection=None
 ):
     user_selection = user_selection or {}
@@ -115,23 +123,24 @@ def get_recommendation_row(
     )
 
     if algorithm == "tmdb":
-        movies = recommend_by_tmdb(reference_movie_id, limit)
+        movies = exclude_collection_movies(recommend_by_tmdb(reference_movie_id, save_limit), collection_movie_ids)[
+            :limit]
 
     elif algorithm == "knn":
         movies = exclude_collection_movies(
-            call_recommend_item_knn(reference_movie_id, limit * 3),
+            call_recommend_item_knn(reference_movie_id, save_limit),
             collection_movie_ids,
         )[:limit]
 
     elif algorithm == "castoverlap":
         movies = exclude_collection_movies(
-            recommend_cast_overlap(reference_movie_id, limit * 3),
+            recommend_cast_overlap(reference_movie_id, save_limit),
             collection_movie_ids,
         )[:limit]
 
     elif algorithm == "genome_overlap":
         movies = exclude_collection_movies(
-            recommend_genome_similarity(reference_movie_id, limit * 3),
+            recommend_genome_similarity(reference_movie_id, save_limit),
             collection_movie_ids,
         )[:limit]
 
@@ -139,7 +148,7 @@ def get_recommendation_row(
         movies = exclude_collection_movies(
             recommend_embedding_similarity(
                 reference_movie_id,
-                limit * 3,
+                save_limit,
                 "clip-vit-large-patch14",
             ),
             collection_movie_ids,
@@ -149,7 +158,7 @@ def get_recommendation_row(
         movies = exclude_collection_movies(
             recommend_embedding_similarity(
                 reference_movie_id,
-                limit * 3,
+                save_limit,
                 "clip-vit-large-patch14-image-genome",
             ),
             collection_movie_ids,
@@ -159,7 +168,7 @@ def get_recommendation_row(
         movies = exclude_collection_movies(
             recommend_by_subtitles(
                 reference_movie_id,
-                limit * 3,
+                save_limit,
             ),
             collection_movie_ids,
         )[:limit]
@@ -204,7 +213,7 @@ def get_recommendation_row(
 #
 # recommendation functions
 #
-def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
+def get_recommendation_rows(reference_movie_id, user_selection, limit=30):
     '''
     title -> name of the algorithm for the frontend
     algorithm -> slug for the algorithm
@@ -218,8 +227,6 @@ def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
     else:
         collection_movie_ids = set()
 
-    tmdb_movies = recommend_by_tmdb(reference_movie_id, 25)
-
     # all recommendations
     rows = []
 
@@ -228,7 +235,10 @@ def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
         "title": "TMDB API Recommendations",
         "algorithm": "tmdb",
         "description": "TMDB API Recommendations",
-        "movies": tmdb_movies[:limit],
+        "movies": exclude_collection_movies(
+            recommend_by_tmdb(reference_movie_id, save_limit),
+            collection_movie_ids,
+        )[:limit],
     })
 
     # TODO - Add Algorithms
@@ -239,7 +249,7 @@ def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
         "description": "???",
         "movies":
             exclude_collection_movies(
-                call_recommend_item_knn(reference_movie_id, limit),
+                call_recommend_item_knn(reference_movie_id, save_limit),
                 collection_movie_ids)[:limit],
     })
 
@@ -250,7 +260,7 @@ def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
         "description": "Movies where people contributed that also contributed to your movie",
         "movies":
             exclude_collection_movies(
-                recommend_cast_overlap(reference_movie_id, limit),
+                recommend_cast_overlap(reference_movie_id, save_limit),
                 collection_movie_ids)[:limit],
     })
 
@@ -259,10 +269,9 @@ def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
         "title": "Genome Tag Overlap",
         "algorithm": "genome_overlap",
         "description": "???",
-        # "movies": recommend_genome_similarity(reference_movie_id, limit),
         "movies":
             exclude_collection_movies(
-                recommend_genome_similarity(reference_movie_id, limit * 3),
+                recommend_genome_similarity(reference_movie_id, save_limit),
                 collection_movie_ids)[:limit],
     })
 
@@ -271,10 +280,9 @@ def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
         "title": "Visual Image Similarity",
         "algorithm": "image_similarity",
         "description": "???",
-        # "movies": recommend_embedding_similarity(reference_movie_id, limit, "clip-vit-large-patch14"),
         "movies":
             exclude_collection_movies(
-                recommend_embedding_similarity(reference_movie_id, limit * 3, "clip-vit-large-patch14"),
+                recommend_embedding_similarity(reference_movie_id, save_limit, "clip-vit-large-patch14"),
                 collection_movie_ids)[:limit],
     })
 
@@ -285,7 +293,7 @@ def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
         # "movies": recommend_embedding_similarity(reference_movie_id, limit, "clip-vit-large-patch14-image-genome"),
         "movies":
             exclude_collection_movies(
-                recommend_embedding_similarity(reference_movie_id, limit * 3,
+                recommend_embedding_similarity(reference_movie_id, save_limit,
                                                "clip-vit-large-patch14-image-genome"),
                 collection_movie_ids)[:limit],
     })
@@ -296,7 +304,7 @@ def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
         "algorithm": "subtitles",
         "movies":
             exclude_collection_movies(
-                recommend_by_subtitles(reference_movie_id, limit),
+                recommend_by_subtitles(reference_movie_id, save_limit),
                 collection_movie_ids)[:limit],
     })
 
@@ -306,11 +314,11 @@ def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
         "algorithm": "weighted_hybrid",
         "description": "Combined recommendations weighted by your preferences",
         "movies":
-            get_weighted_recommendations(reference_movie_id, user_selection, limit),
+            get_weighted_recommendations(reference_movie_id, user_selection, save_limit)[:limit],
     })
 
     # collection – only append if the reference movie is part of a collection
-    collection_movies = recommend_by_collection(reference_movie_id, limit)
+    collection_movies = recommend_by_collection(reference_movie_id, save_limit)[:limit]
 
     if collection_movies:
         rows.append({
@@ -318,7 +326,7 @@ def get_recommendation_rows(reference_movie_id, user_selection, limit=20):
             "algorithm": "collection",
             "description": "???",
             "movies":
-                    collection_movies,
+                collection_movies,
         })
 
     # evaluate_using_tmdb(reference_movie_id, distinct_movieids, "recommendations", 20)

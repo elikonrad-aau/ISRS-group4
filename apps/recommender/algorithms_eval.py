@@ -4,6 +4,8 @@ from apps.data.models import Movie
 from apps.recommender.algorithms_recs import (
     get_recommendation_rows,
     recommend_by_tmdb,
+    get_collection_movie_ids,
+    exclude_collection_movies,
 )
 
 SKIP_EVAL = False
@@ -95,10 +97,16 @@ def evaluate_recommendation_rows(
     )
 
     # TMDB baseline used for comparison
-    tmdb_movies = recommend_by_tmdb(
-        reference_movie_id,
-        50,
+    collection_movie_ids = get_collection_movie_ids(reference_movie_id)
+
+    tmdb_movies = exclude_collection_movies(
+        recommend_by_tmdb(reference_movie_id, 50),
+        collection_movie_ids,
     )
+    # tmdb_movies = recommend_by_tmdb(
+    #     reference_movie_id,
+    #     50,
+    # )
 
     evaluated_rows = []
 
@@ -106,7 +114,7 @@ def evaluate_recommendation_rows(
         algorithm = row["algorithm"]
 
         # skip baseline row
-        if algorithm == "tmdb":
+        if algorithm in ["tmdb", "collection"]:
             continue
 
         evaluation = evaluate_algorithm(

@@ -69,8 +69,8 @@ h1, h2, h3, h4 {
 }
 
 h1 {
-    margin: 0 0 1.125rem 0;
-    font-size: 2.25rem;
+    margin: 0 0 1.5rem 0;
+    font-size: 2.1rem;
     font-weight: 500;
 }
 
@@ -644,12 +644,6 @@ $shadow-color: rgba(0, 0, 0, 0.3);
     box-shadow: 0 10px 30px $shadow-color;
     max-height: calc(100vh - 140px);
     overflow: hidden;
-
-    h1 {
-        color: $text-primary;
-        margin-bottom: 1.5rem;
-        font-weight: 600;
-    }
 
     .form-control {
         border: 2px solid $border-color;
