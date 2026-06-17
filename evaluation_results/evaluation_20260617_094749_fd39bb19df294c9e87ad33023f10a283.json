@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-06-17T09:47:49.232899",
+  "reference_movie_id": 1,
+  "responses": [],
+  "overall": {
+    "fit": "3",
+    "diversity": "3",
+    "satisfaction": "3",
+    "top_3": []
+  }
+}
