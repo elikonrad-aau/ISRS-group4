@@ -1,0 +1,285 @@
+{
+  "created_at": "2026-06-17T19:28:39.437645",
+  "reference_movie_id": 6981,
+  "responses": [
+    {
+      "movie_id": "1935",
+      "algorithms": {
+        "image_text_similarity": 3
+      },
+      "familiarity": "watched",
+      "rating": "2",
+      "relevance": "2",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "7301",
+      "algorithms": {
+        "genome_overlap": 4,
+        "weighted_hybrid": 5
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "3",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "3109",
+      "algorithms": {
+        "tmdb": 1
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "3",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "5147",
+      "algorithms": {
+        "image_similarity": 3,
+        "image_text_similarity": 2
+      },
+      "familiarity": "watched",
+      "rating": "3",
+      "relevance": "1",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "26151",
+      "algorithms": {
+        "knn": 4
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "2",
+      "watch_likelihood": "4",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "7938",
+      "algorithms": {
+        "genome_overlap": 5,
+        "subtitles": 3,
+        "weighted_hybrid": 1
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "1",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "26052",
+      "algorithms": {
+        "knn": 2
+      },
+      "familiarity": "watched",
+      "rating": "5",
+      "relevance": "5",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "6467",
+      "algorithms": {
+        "image_similarity": 4,
+        "image_text_similarity": 4
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "2",
+      "watch_likelihood": "4",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "79523",
+      "algorithms": {
+        "image_similarity": 2
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "1",
+      "watch_likelihood": "2",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "57017",
+      "algorithms": {
+        "tmdb": 4
+      },
+      "familiarity": "watched",
+      "rating": "5",
+      "relevance": "4",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "86246",
+      "algorithms": {
+        "image_similarity": 5
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "3",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "953",
+      "algorithms": {
+        "tmdb": 3
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "1",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "8239",
+      "algorithms": {
+        "knn": 5,
+        "image_similarity": 1,
+        "image_text_similarity": 1,
+        "weighted_hybrid": 3
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "5",
+      "watch_likelihood": "5",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "3817",
+      "algorithms": {
+        "subtitles": 5
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "2",
+      "watch_likelihood": "3",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "7939",
+      "algorithms": {
+        "genome_overlap": 3,
+        "weighted_hybrid": 4
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "1",
+      "watch_likelihood": "2",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "72949",
+      "algorithms": {
+        "tmdb": 5
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "4",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "7820",
+      "algorithms": {
+        "image_text_similarity": 5
+      },
+      "familiarity": "watched",
+      "rating": "2",
+      "relevance": "1",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "6609",
+      "algorithms": {
+        "genome_overlap": 1
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "5",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "110603",
+      "algorithms": {
+        "tmdb": 2
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "4",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "39615",
+      "algorithms": {
+        "subtitles": 1
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "2",
+      "watch_likelihood": "1",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "25898",
+      "algorithms": {
+        "knn": 1,
+        "genome_overlap": 2,
+        "subtitles": 2,
+        "weighted_hybrid": 2
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "5",
+      "watch_likelihood": "4",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "79807",
+      "algorithms": {
+        "subtitles": 4
+      },
+      "familiarity": "watched",
+      "rating": "1",
+      "relevance": "2",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "8199",
+      "algorithms": {
+        "knn": 3
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "2",
+      "novelty_score": 1
+    }
+  ],
+  "overall": {
+    "relevance": "2",
+    "diversity": "3",
+    "satisfaction": "4",
+    "trust": "5",
+    "usefulness": "2",
+    "top_5": [
+      "1935",
+      "5147",
+      "26151",
+      "6467",
+      "79523"
+    ]
+  }
+}
