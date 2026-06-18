@@ -27,6 +27,7 @@
             </div>
         </div>
 
+        {# –– Partially Based on the ResQue by Pearl Pu (https://doi.org/10.1145/2043932.2043962) –– #}
         <form method="post" id="evaluation-step-form">
             {% csrf_token %}
 
@@ -61,6 +62,10 @@
 
                     <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
+                            {# RESQUE: 2. Recommendation Novelty #}
+                            {# The items recommended to me are novel. #}
+                            {# The recommender system helped me discover new products. #}
+
                             How familiar are you with this movie?
                         </p>
 
@@ -101,10 +106,12 @@
                         </div>
                     </div>
 
-                                        <div class="border-top pt-4 mb-4">
+                    <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
-                            How relevant is this recommendation based on your selected reference movie
-                            ({{ reference_movie.display_title }})?
+                            {# RESQUE: 1. Recommendation Accuracy #}
+                            {# The items recommended to me matched my interests. #}
+
+                            How closely does this movie match what you expected to see based on your selected reference movie?
                         </p>
 
                         <div class="btn-group w-100" role="group" aria-label="Recommendation relevance">
@@ -124,15 +131,17 @@
                         </div>
 
                         <div class="d-flex justify-content-between small text-muted mt-2">
-                            <span>Not relevant</span>
-                            <span>Very relevant</span>
+                            <span>Does not match at all</span>
+                            <span>Matches very well</span>
                         </div>
                     </div>
 
                     <div id="watched-questions" class="d-none">
                         <div class="border-top pt-4 mb-4">
                             <p class="fw-semibold mb-3">
-                                How did you like this movie?
+                                {# no direct match #}
+
+                                How much did you enjoy this movie?
                             </p>
 
                             <div class="btn-group w-100" role="group" aria-label="Movie rating">
@@ -151,8 +160,8 @@
                             </div>
 
                             <div class="d-flex justify-content-between small text-muted mt-2">
-                                <span>Did not like it</span>
-                                <span>Liked it very much</span>
+                                <span>Did not enjoy it at all</span>
+                                <span>Enjoyed it very much</span>
                             </div>
                         </div>
                     </div>
@@ -160,7 +169,13 @@
                     <div id="unwatched-questions" class="d-none">
                         <div class="border-top pt-4 mb-4">
                             <p class="fw-semibold mb-3">
-                                What are the chances of you watching this movie based on this recommendation?
+                                {# RESQUE: 13. Confidence & Trust #}
+                                {# I am confident I will like the items recommended to me. #}
+
+                                {# RESQUE: 15. Purchase Intention #}
+                                {# I would buy the items recommended, given the opportunity. #}
+
+                                How interested are you in watching this movie?
                             </p>
 
                             <div class="btn-group w-100" role="group" aria-label="Watch likelihood">
@@ -179,8 +194,8 @@
                             </div>
 
                             <div class="d-flex justify-content-between small text-muted mt-2">
-                                <span>Very unlikely</span>
-                                <span>Very likely</span>
+                                <span>Not interested at all</span>
+                                <span>Very interested</span>
                             </div>
                         </div>
                     </div>

@@ -7,6 +7,7 @@
 <section class="movie-evaluations">
     <div class="container px-4">
 
+        {# –– Partially Based on the ResQue by Pearl Pu (https://doi.org/10.1145/2043932.2043962) –– #}
         <form method="post" action="{% url 'frontend:finish_evaluation' %}">
             {% csrf_token %}
 
@@ -17,6 +18,8 @@
 
                     <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
+                            {# no direct match #}
+
                             Select your top 5 recommendations from the list:
                         </p>
 
@@ -63,7 +66,10 @@
 
                     <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
-                            How relevant were these recommendations based on your selected reference movie?
+                            {# RESQUE: 1. Recommendation Accuracy #}
+                            {# The items recommended to me matched my interests. #}
+
+                            Overall, how well did these recommendations match your movie preferences?
                         </p>
 
                         <div class="btn-group w-100" role="group" aria-label="Overall relevance">
@@ -82,13 +88,16 @@
                         </div>
 
                         <div class="d-flex justify-content-between small text-muted mt-2">
-                            <span>Not relevant</span>
-                            <span>Very relevant</span>
+                            <span>Did not match my preferences</span>
+                            <span>Matched my preferences very well</span>
                         </div>
                     </div>
 
                     <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
+                            {# RESQUE: 3. Recommendation Diversity #}
+                            {# The items recommended to me are diverse. #}
+
                             How diverse were the recommendations?
                         </p>
 
@@ -115,6 +124,9 @@
 
                     <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
+                            {# RESQUE: 12. Overall Satisfaction #}
+                            {# Overall, I am satisfied with the recommender. #}
+
                             How satisfied were you with the recommendations?
                         </p>
 
@@ -141,10 +153,14 @@
 
                     <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
-                            How likely are you to use this recommender system when choosing a movie to watch?
+                            {# RESQUE: 14. Use Intentions #}
+                            {# I will use this recommender again. #}
+                            {# I will use this recommender frequently. #}
+
+                            How likely would you be to use this recommender again when looking for a movie to watch?
                         </p>
 
-                        <div class="btn-group w-100" role="group" aria-label="Overall trust">
+                        <div class="btn-group w-100" role="group" aria-label="Overall intention to use">
                             {% for value in "12345" %}
                             <input
                                     type="radio"
@@ -160,14 +176,19 @@
                         </div>
 
                         <div class="d-flex justify-content-between small text-muted mt-2">
-                            <span>Not Likely</span>
-                            <span>Very Likely</span>
+                            <span>Very unlikely</span>
+                            <span>Very likely</span>
                         </div>
                     </div>
 
                     <div class="border-top pt-4 mb-4">
                         <p class="fw-semibold mb-3">
-                            How useful was this list of recommendations when it came to finding movies you might actually want to watch?
+                            {# RESQUE: 11. Perceived Usefulness #}
+                            {# The recommender helped me find the ideal item. #}
+                            {# Using the recommender to find what I like is easy. #}
+                            {# The recommender gave me good suggestions. #}
+
+                            How useful were these recommendations for finding movies you would consider watching?
                         </p>
 
                         <div class="btn-group w-100" role="group" aria-label="Overall usefulness">
@@ -186,7 +207,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between small text-muted mt-2">
-                            <span>Not useful</span>
+                            <span>Not useful at all</span>
                             <span>Very useful</span>
                         </div>
                     </div>
