@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
         # iterate over all movies
         for movie in movies:
-            # get the 100 most relevant genome tags for every movie
+            # get the 50 most relevant genome tags for every movie
             top_scores = (
                 GenomeScore.objects
                 .filter(movie=movie)

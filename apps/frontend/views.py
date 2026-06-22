@@ -276,6 +276,11 @@ def movie_evaluation(request):
     if not movie_id:
         return JsonResponse({"error": "movie_id is required"}, status=400)
 
+    try:
+        movie_id = int(movie_id)
+    except ValueError:
+        return JsonResponse({"error": "movie_id must be an integer"}, status=400)
+
     reference_movie = get_object_or_404(Movie, movie_id=movie_id)
 
     user_selection = {
@@ -293,6 +298,20 @@ def movie_evaluation(request):
         )
         if row["algorithm"] != "collection"
     ]
+
+    print("\n=== RECOMMENDATION ROWS ===", flush=True)
+
+    for row in recommendation_rows:
+        algorithm = row.get("algorithm", "unknown")
+        movies = row.get("movies", [])
+
+        print(f"\n{algorithm}", flush=True)
+
+        for movie in movies:
+            print(
+                f"  {movie.movie_id} - {movie.title}",
+                flush=True,
+            )
 
     PER_ALGO_LIMIT = 5
     unique_movies = {}
