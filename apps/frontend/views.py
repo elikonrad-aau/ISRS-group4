@@ -13,7 +13,9 @@ from apps.data.models import Movie
 from apps.recommender.algorithms_recs import get_recommendation_rows, get_recommendation_row
 from django.conf import settings
 
+from apps.recommender.tmdb_similarity_eval import evaluate_single_algorithm
 
+SKIP_SINGLE_EVAL = True
 
 # live search views
 def movie_search(request):
@@ -236,9 +238,11 @@ def recommendation_algorithm_row(request, movie_id, algorithm):
         user_selection = user_selection
     )
 
-    # TODO ADD EVAL
-    if algorithm != "tmdb":
+    # Single TMDB eval
+    if not SKIP_SINGLE_EVAL and algorithm != "tmdb":
         print("EVAL for " + algorithm)
+        evaluate_single_algorithm(movie_id, algorithm, row, 50)
+
 
     if not row:
         row = {

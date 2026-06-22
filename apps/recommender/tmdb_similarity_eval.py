@@ -1,8 +1,27 @@
 import os
-from apps.data.models import Movie, MovieLink, MovieMetadata, MovieGenomeProfile, GenomeRecommendation
+from apps.data.models import MovieLink
 import requests
 
-def evaluate_using_tmdb(reference_movie_id, distinct_ids, url_ending="recommendations", limit=20):
+
+
+def evaluate_using_tmdb(reference_movie_id, algorithm_str, distinct_ids, url_ending="recommendations", limit=20):
+    fetched_similar_ids = get_tmdb_movie_ids_for_eval(reference_movie_id, url_ending, limit)
+
+    total_fetched = len(fetched_similar_ids)
+    overlap_set = distinct_ids.intersection(fetched_similar_ids)
+    overlap_count = len(overlap_set)
+
+    print(f"\n {algorithm_str} +++++++++++++++++++++++++++++++++++++  --- Evaluation Results +++ {algorithm_str}---")
+    print(f" {algorithm_str} +++ How many of the recommended movies were in the tmdb movies: {overlap_count}/{len(distinct_ids)}")
+
+    if overlap_count > 0:
+        sorted_overlap = sorted(list(overlap_set))
+        print(f" {algorithm_str} +++ Overlapping IDs: {sorted_overlap[:10]}{'...' if len(sorted_overlap) > 10 else ''}")
+
+    return overlap_count, total_fetched
+
+
+def get_tmdb_movie_ids_for_eval(reference_movie_id, url_ending, limit):
     token = os.environ.get("TMDB_API_TOKEN")
     reference_link = MovieLink.objects.filter(
         movie__movie_id=reference_movie_id,
@@ -39,8 +58,8 @@ def evaluate_using_tmdb(reference_movie_id, distinct_ids, url_ending="recommenda
             # Map TMDB IDs to your local Movie objects efficiently
             # Extract all TMDB IDs from current page
             current_page_tmdb_ids = [item["id"] for item in results]
-            for item in results:
-                print(item["title"])
+            # for item in results:
+            #     print(item["title"])
 
             # Fetch corresponding local movies in one query
             links = MovieLink.objects.filter(tmdb_id__in=current_page_tmdb_ids).select_related("movie")
@@ -71,18 +90,30 @@ def evaluate_using_tmdb(reference_movie_id, distinct_ids, url_ending="recommenda
         except requests.exceptions.RequestException as e:
             print(f"Request failed: {e}")
             break
+    return fetched_similar_ids
 
-    total_fetched = len(fetched_similar_ids)
-    overlap_set = distinct_ids.intersection(fetched_similar_ids)
-    overlap_count = len(overlap_set)
 
-    print(f"\n--- Evaluation Results ---")
-    print(f"Total similar movies fetched from TMDB: {total_fetched}")
-    print(f"Overlap with recommendations: {overlap_count} movies")
-    print(f"How many of the recommended movies were in the tmdb movies: {overlap_count}/{len(distinct_ids)}")
 
-    if overlap_count > 0:
-        sorted_overlap = sorted(list(overlap_set))
-        print(f"Overlapping IDs: {sorted_overlap[:10]}{'...' if len(sorted_overlap) > 10 else ''}")
+def get_distinct_movieids_of_row_for_eval(row):
+    distinct_ids = set()
+    movies_list = row.get("movies", [])
+    for movie in movies_list:
+        if hasattr(movie, 'movie_id'):
+            distinct_ids.add(movie.movie_id)
+        elif isinstance(movie, dict) and "movie_id" in movie:
+            distinct_ids.add(movie["movie_id"])
 
-    return overlap_count, total_fetched
+    print(f"\n--- Distinct Movie IDs Found ({len(distinct_ids)} total) ---")
+    print(", ".join(map(str, sorted(distinct_ids))))
+    return distinct_ids
+
+
+def evaluate_single_algorithm(
+        reference_movie_id,
+        algorithm_str,
+        row,
+        tmdb_limit
+):
+    distinct_ids = get_distinct_movieids_of_row_for_eval(row)
+    evaluate_using_tmdb(reference_movie_id, algorithm_str, distinct_ids, url_ending="recommendations", limit=tmdb_limit)
+

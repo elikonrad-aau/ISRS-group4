@@ -24,7 +24,7 @@ ALGORITHM_CONFIG = {
     },
     "knn": {
         "title": "Users who liked this movie also liked",
-        "description": "???",
+        "description": "These movies were rated positively by users who liked your movie",
     },
     "castoverlap": {
         "title": "Shared Credits Overlap",
