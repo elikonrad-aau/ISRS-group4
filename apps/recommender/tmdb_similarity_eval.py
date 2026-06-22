@@ -12,7 +12,7 @@ def evaluate_using_tmdb(reference_movie_id, algorithm_str, distinct_ids, url_end
     overlap_count = len(overlap_set)
 
     print(f"\n {algorithm_str} +++++++++++++++++++++++++++++++++++++  --- Evaluation Results +++ {algorithm_str}---")
-    print(f" {algorithm_str} +++ How many of the recommended movies were in the tmdb movies: {overlap_count}/{len(distinct_ids)}")
+    print(f" {algorithm_str} +++ How many of the recommended movies were in the {limit} tmdb movies: {overlap_count}/{len(distinct_ids)}")
 
     if overlap_count > 0:
         sorted_overlap = sorted(list(overlap_set))
