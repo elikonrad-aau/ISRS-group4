@@ -1,0 +1,305 @@
+{
+  "created_at": "2026-06-21T15:33:23.035548",
+  "reference_movie_id": 296,
+  "responses": [
+    {
+      "movie_id": "81",
+      "algorithms": {
+        "subtitles": 2
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "3",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "2571",
+      "algorithms": {
+        "image_similarity": 4
+      },
+      "familiarity": "watched",
+      "rating": "4",
+      "relevance": "2",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "1089",
+      "algorithms": {
+        "tmdb": 2,
+        "genome_overlap": 1,
+        "image_text_similarity": 3,
+        "weighted_hybrid": 1
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "4",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "52281",
+      "algorithms": {
+        "subtitles": 1
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "3",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "5678",
+      "algorithms": {
+        "tmdb": 1
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "2",
+      "watch_likelihood": "1",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "1732",
+      "algorithms": {
+        "weighted_hybrid": 4
+      },
+      "familiarity": "watched",
+      "rating": "5",
+      "relevance": "4",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "356",
+      "algorithms": {
+        "knn": 5
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "2",
+      "watch_likelihood": "5",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "50794",
+      "algorithms": {
+        "tmdb": 4
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "2",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "2542",
+      "algorithms": {
+        "genome_overlap": 3
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "3",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "53519",
+      "algorithms": {
+        "subtitles": 5
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "1",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "111",
+      "algorithms": {
+        "image_similarity": 5,
+        "image_text_similarity": 4
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "5",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "47",
+      "algorithms": {
+        "knn": 3
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "5",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "1729",
+      "algorithms": {
+        "genome_overlap": 2
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "3",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "293",
+      "algorithms": {
+        "image_similarity": 2,
+        "image_text_similarity": 5,
+        "weighted_hybrid": 5
+      },
+      "familiarity": "watched",
+      "rating": "3",
+      "relevance": "5",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "1785",
+      "algorithms": {
+        "tmdb": 5
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "2",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "318",
+      "algorithms": {
+        "knn": 2
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "4",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "593",
+      "algorithms": {
+        "knn": 1,
+        "weighted_hybrid": 3
+      },
+      "familiarity": "watched",
+      "rating": "5",
+      "relevance": "1",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "4011",
+      "algorithms": {
+        "genome_overlap": 4
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "3",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "2959",
+      "algorithms": {
+        "image_similarity": 1,
+        "image_text_similarity": 2,
+        "weighted_hybrid": 2
+      },
+      "familiarity": "watched",
+      "rating": "4",
+      "relevance": "3",
+      "watch_likelihood": null,
+      "novelty_score": 0
+    },
+    {
+      "movie_id": "555",
+      "algorithms": {
+        "genome_overlap": 5
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "4",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "4945",
+      "algorithms": {
+        "image_similarity": 3,
+        "image_text_similarity": 1
+      },
+      "familiarity": "heard",
+      "rating": null,
+      "relevance": "4",
+      "watch_likelihood": "3",
+      "novelty_score": 1
+    },
+    {
+      "movie_id": "7047",
+      "algorithms": {
+        "tmdb": 3
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "2",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "74532",
+      "algorithms": {
+        "subtitles": 4
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "3",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "50",
+      "algorithms": {
+        "knn": 4
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "2",
+      "novelty_score": 2
+    },
+    {
+      "movie_id": "7354",
+      "algorithms": {
+        "subtitles": 3
+      },
+      "familiarity": "unknown",
+      "rating": null,
+      "relevance": "3",
+      "watch_likelihood": "3",
+      "novelty_score": 2
+    }
+  ],
+  "overall": {
+    "relevance": "2",
+    "diversity": "5",
+    "satisfaction": "3",
+    "trust": "3",
+    "usefulness": "2",
+    "top_5": [
+      "1089",
+      "1732",
+      "47",
+      "293",
+      "4945"
+    ]
+  }
+}
