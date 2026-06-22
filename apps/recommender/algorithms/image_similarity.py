@@ -7,7 +7,7 @@ from collections import defaultdict
 from PIL import Image
 from tqdm import tqdm
 from torchvision import models
-from transformers import AutoImageProcessor,AutoModel,CLIPModel,CLIPProcessor
+from transformers import AutoImageProcessor,AutoModel
 
 
 #
