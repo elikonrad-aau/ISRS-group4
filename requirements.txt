@@ -6,6 +6,7 @@ psycopg2-binary
 pandas
 numpy
 requests
+matplotlib
 
 # Image Similarity
 torch
