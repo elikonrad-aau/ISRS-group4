@@ -16,6 +16,27 @@ def to_int(value):
 def avg(values):
     return round(mean(values), 3) if values else None
 
+def rank_algorithms_rrf(rows, metrics, k=60):
+    rrf_scores = {row["algorithm"]: 0 for row in rows}
+
+    for metric in metrics:
+        valid_rows = [row for row in rows if row.get(metric) is not None]
+
+        ranked = sorted(
+            valid_rows,
+            key=lambda row: row[metric],
+            reverse=True
+        )
+
+        for rank, row in enumerate(ranked, start=1):
+            rrf_scores[row["algorithm"]] += 1 / (k + rank)
+
+    for row in rows:
+        row["rrf_score"] = round(rrf_scores[row["algorithm"]], 6)
+
+    return sorted(rows, key=lambda row: row["rrf_score"], reverse=True)
+
+
 
 def main():
     folder = os.path.dirname(os.path.abspath(__file__))
@@ -105,6 +126,22 @@ def main():
     }
 
     if algorithm_rows:
+        rrf_metrics = [
+            "avg_relevance",
+            "top_5_hit_rate",
+            "avg_watch_likelihood_unwatched",
+            "avg_rating_watched",
+        ]
+
+        algorithm_rows = rank_algorithms_rrf(
+            algorithm_rows,
+            metrics=rrf_metrics,
+            k=10
+        )
+
+        for rank, row in enumerate(algorithm_rows, start=1):
+            row["rrf_rank"] = rank
+
         with open(os.path.join(folder, "algorithm_summary.csv"), "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=algorithm_rows[0].keys())
             writer.writeheader()

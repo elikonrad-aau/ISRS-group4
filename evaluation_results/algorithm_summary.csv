@@ -1,8 +1,8 @@
-algorithm,n_recommendations,avg_rating_watched,avg_relevance,avg_watch_likelihood_unwatched,avg_novelty,top_5_hits,top_5_hit_rate
-genome_overlap,15,4.5,2.267,1.846,1.533,3,0.2
-image_similarity,15,4.667,2.733,2.25,1.267,3,0.2
-image_text_similarity,15,4.667,2.733,2.417,1.2,3,0.2
-knn,15,4.5,2.6,2.889,0.867,4,0.267
-subtitles,15,3,2.4,2.214,1.733,2,0.133
-tmdb,15,5,2.467,2.071,1.867,1,0.067
-weighted_hybrid,15,4.667,2.8,2.25,1.333,6,0.4
+algorithm,n_recommendations,avg_rating_watched,avg_relevance,avg_watch_likelihood_unwatched,avg_novelty,top_5_hits,top_5_hit_rate,rrf_score,rrf_rank
+weighted_hybrid,20,4.167,3,2.214,1.2,8,0.4,0.33658,1
+image_similarity,20,4,2.9,2.214,1.15,4,0.2,0.314103,2
+image_text_similarity,20,4,2.9,2.357,1.1,4,0.2,0.303114,3
+genome_overlap,20,4.5,2.6,1.875,1.45,5,0.25,0.295566,4
+knn,20,3.889,2.7,2.818,0.85,4,0.2,0.287828,5
+subtitles,20,4,2.5,2.167,1.7,3,0.15,0.254657,6
+tmdb,20,4,2.65,2.062,1.6,3,0.15,0.25049,7
