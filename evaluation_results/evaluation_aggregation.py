@@ -36,6 +36,50 @@ def rank_algorithms_rrf(rows, metrics, k=60):
 
     return sorted(rows, key=lambda row: row["rrf_score"], reverse=True)
 
+def rank_algorithms_weighted(rows, weights):
+    metric_ranges = {}
+
+    for metric in weights:
+        values = [
+            row[metric]
+            for row in rows
+            if row.get(metric) is not None
+        ]
+
+        metric_ranges[metric] = {
+            "min": min(values),
+            "max": max(values),
+        }
+
+    for row in rows:
+        score = 0
+
+        for metric, weight in weights.items():
+            value = row.get(metric)
+
+            if value is None:
+                continue
+
+            min_value = metric_ranges[metric]["min"]
+            max_value = metric_ranges[metric]["max"]
+
+            if max_value == min_value:
+                normalized = 1
+            else:
+                normalized = (
+                    (value - min_value)
+                    / (max_value - min_value)
+                )
+
+            score += normalized * weight
+
+        row["weighted_score"] = round(score, 6)
+
+    return sorted(
+        rows,
+        key=lambda row: row["weighted_score"],
+        reverse=True
+    )
 
 
 def main():
@@ -131,7 +175,24 @@ def main():
             "top_5_hit_rate",
             "avg_watch_likelihood_unwatched",
             "avg_rating_watched",
+            "avg_novelty",
         ]
+
+        weighted_metrics = {
+            "avg_relevance": 0.25,
+            "top_5_hit_rate": 0.25,
+            "avg_novelty": 0.20,
+            "avg_watch_likelihood_unwatched": 0.15,
+            "avg_rating_watched": 0.15,
+        }
+
+        weighted_rows = rank_algorithms_weighted(
+            algorithm_rows,
+            weights=weighted_metrics
+        )
+
+        for rank, row in enumerate(weighted_rows, start=1):
+            row["weighted_rank"] = rank
 
         algorithm_rows = rank_algorithms_rrf(
             algorithm_rows,
