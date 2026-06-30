@@ -12,11 +12,13 @@ OUTPUT_DIR = "./saved_model"
 MODEL_NAME = "all-MiniLM-L6-v2"
 CHUNK_SIZE_WORDS = 200  # Split text files (subtitles) in 200 words to avoid token limit 256
 
+# GENERATES apps/recommender/embeddings/subtitles_models embeddings for subtitles Algorithm
 
 def clean_srt(file_path):
     with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
         content = f.read()
 
+    # removin format from subtitle files
     content = re.sub(r'\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}', '', content)
     content = re.sub(r'^\d+$', '', content, flags=re.MULTILINE)
     content = re.sub(r'<[^>]+>', '', content)
@@ -31,6 +33,7 @@ def extract_movie_id(filename):
 
 
 def split_into_chunks(text, chunk_size_words):
+    # avoiding max token limit
     words = text.split()
     chunks = []
     for i in range(0, len(words), chunk_size_words):
@@ -63,7 +66,7 @@ def main():
 
         chunk_embeddings = model.encode(chunks, convert_to_numpy=True, show_progress_bar=False)
 
-        # Average to get ONE vector for the whole movie subtitles
+        # Average to get 1 vector for the whole movie subtitles
         avg_embedding = np.mean(chunk_embeddings, axis=0)
         movie_ids.append(mid)
         final_embeddings.append(avg_embedding)

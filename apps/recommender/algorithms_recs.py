@@ -675,7 +675,6 @@ def get_weighted_recommendations(reference_movie_id, user_selection, limit=20):
         try:
             raw_results = algo["function"]()
 
-            # FIX 1: Use attribute access (movie.movie_id) instead of dict access (movie['id'])
             filtered_results = [m for m in raw_results if m.movie_id not in collection_movie_ids]
 
             weight = algo["base_weight"]
@@ -698,7 +697,6 @@ def get_weighted_recommendations(reference_movie_id, user_selection, limit=20):
 
     for ranked_list in ranked_lists:
         for rank, movie in enumerate(ranked_list["movies"], 1):
-            # FIX 2: Use attribute access (movie.movie_id) instead of dict access (movie["id"])
             movie_id = movie.movie_id
 
             if movie_id not in rrf_scores:

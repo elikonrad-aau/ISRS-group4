@@ -7,6 +7,8 @@ from scipy.sparse import csr_matrix, save_npz
 import sys
 import gc
 
+# GENERATES item_knn folder (pickle files and npz) knn Algorithm
+# folder content must be saved in apps/recommender/embeddings/item_knn
 
 def build_and_cache_model(ratings_csv_path, output_dir="model_cache"):
     cache_dir = Path(output_dir)
@@ -30,9 +32,6 @@ def build_and_cache_model(ratings_csv_path, output_dir="model_cache"):
 
     num_users = len(unique_users)
     num_movies = len(valid_movies)
-
-    print(f"   Users: {num_users}, Movies: {num_movies}")
-
 
     rows = []
     cols = []
@@ -65,7 +64,7 @@ def build_and_cache_model(ratings_csv_path, output_dir="model_cache"):
         n_neighbors=50,
         metric='cosine',
         algorithm='brute',
-        n_jobs=-1
+        n_jobs=-1            # use all avail. cores
     )
 
     knn.fit(sparse_matrix.T)
@@ -75,14 +74,10 @@ def build_and_cache_model(ratings_csv_path, output_dir="model_cache"):
 
     with open(cache_dir / "movie_ids.pkl", "wb") as f:
         pickle.dump(movie_ids, f)
-
     save_npz(cache_dir / "rating_matrix_sparse.npz", sparse_matrix)
 
     print(f"Saved to: {cache_dir.absolute()}")
 
 if __name__ == "__main__":
     csv_path = "C:/Users/elisa/PycharmProjects/ISRS-group4/dataset/ratings.csv"
-    if len(sys.argv) > 1:
-        csv_path = sys.argv[1]
-
     build_and_cache_model(csv_path)
