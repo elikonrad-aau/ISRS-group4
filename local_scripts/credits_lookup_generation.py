@@ -6,6 +6,9 @@ import pickle
 import os
 import sys
 
+# GENERATES PICKLE FILE for Credits Overlap Algorithmx
+# file must be saved in apps/recommender/embeddings
+
 BASE_DIR = r"C:/Users/elisa/PycharmProjects/ISRS-group4/dataset"
 MOVIES_FILE = os.path.join(BASE_DIR, "movies.csv")
 CREDITS_FILE = os.path.join(BASE_DIR, "credits.csv")
@@ -13,8 +16,8 @@ RATINGS_FILE = os.path.join(BASE_DIR, "ratings.csv")
 OUTPUT_PICKLE = "simple_movie_lookups.pkl"
 
 TOP_OVERLAPS_PER_MOVIE = 20
-MAX_CAST_TO_CHECK = 10
-MAX_CREW_TO_CHECK = 15
+MAX_CAST_TO_CHECK = 10 # limit for cast members
+MAX_CREW_TO_CHECK = 15 # limit for crew members
 
 def safe_parse_list(cast_string):
     if pd.isna(cast_string) or cast_string == '' or cast_string is None: return []
@@ -73,9 +76,6 @@ def build_indices(credits_df, valid_movie_ids):
 
 
 def calculate_overlaps(actor_index, crew_index, valid_movie_ids, movies_df):
-    print(f"Calculating overlaps for {len(valid_movie_ids)} movies...")
-
-    # Pre-build maps
     movie_cast_map = {}
     movie_crew_map = {}
 
@@ -101,10 +101,7 @@ def calculate_overlaps(actor_index, crew_index, valid_movie_ids, movies_df):
     total = len(valid_movie_ids)
 
     for i, ref_id in enumerate(sorted(list(valid_movie_ids))):
-        if i % 2000 == 0: print(f"  {i}/{total}")
-
         ref_people = movie_cast_map.get(ref_id, set()).union(movie_crew_map.get(ref_id, set()))
-
         strict_counts = defaultdict(set)
 
         for person in ref_people:
@@ -125,10 +122,6 @@ def calculate_overlaps(actor_index, crew_index, valid_movie_ids, movies_df):
 
 
 def main():
-    print("=" * 60)
-    print("GENERATING OPTIMIZED LOOKUP (Tuples Only)")
-    print("=" * 60)
-
     movies_df, credits_df, ratings_df = load_data()
     valid_ids = set(movies_df['movieId'].unique())
 
@@ -137,9 +130,7 @@ def main():
 
     # Calculate overlaps
     overlap_data = calculate_overlaps(actor_idx, crew_idx, valid_ids, movies_df)
-
-    # Prepare Metadata Map (Simple Dict of Dicts)
-    print("Preparing metadata map...")
+    # Metadata Map -> Simple Dict of Dicts)
     title_map = movies_df.set_index('movieId')['title'].to_dict()
 
     avg_ratings = ratings_df.groupby('movieId')['rating'].mean().reset_index()
@@ -153,7 +144,7 @@ def main():
             "rating": rating_map.get(mid)
         }
 
-    # Save both structures in one file for convenience
+    # Save both structures in one file
     final_data = {
         "overlaps": overlap_data,  # Key: movie_id, Value: [(target_id, score), ...]
         "metadata": metadata  # Key: movie_id, Value: {title, rating}
@@ -162,18 +153,6 @@ def main():
     print(f"\nSaving to {OUTPUT_PICKLE}...")
     with open(OUTPUT_PICKLE, 'wb') as f:
         pickle.dump(final_data, f, protocol=pickle.HIGHEST_PROTOCOL)
-
-    size_mb = os.path.getsize(OUTPUT_PICKLE) / (1024 * 1024)
-    print(f"Done! Size: {size_mb:.2f} MB.")
-
-    # Test
-    test_id = 260
-    if test_id in overlap_data:
-        recs = overlap_data[test_id]
-        meta = metadata[test_id]
-        print(f"\nSample Movie: {meta['title']} (ID: {test_id})")
-        print(f"Top Recs (ID, Score): {recs[:3]}")
-
 
 if __name__ == "__main__":
     main()
