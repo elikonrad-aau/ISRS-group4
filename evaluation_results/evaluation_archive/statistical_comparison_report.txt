@@ -1,0 +1,228 @@
+STATISTICAL COMPARISON OF RECOMMENDATION ALGORITHMS
+Friedman + Wilcoxon for continuous metrics
+Cochran's Q + McNemar for in_top5
+alpha = 0.05, multiple-comparison correction = holm
+
+==============================================================================
+1. DATA AGGREGATION
+==============================================================================
+Input rows (per recommendation): 360
+Evaluators: 9
+Algorithms (8): castoverlap, genome_overlap, image_similarity, image_text_similarity, knn, subtitles, tmdb, weighted_hybrid
+Movies per (evaluator, algorithm) cell - min: 5, max: 5, mean: 5.0
+
+Aggregation method: MEAN for relevance, preference_score, novelty_score; ANY-hit (maximum) for in_top5.
+Result: one subject-by-condition matrix per metric (9 evaluators × 8 algorithms).
+
+==============================================================================
+2. UNCORRECTED OMNIBUS TEST RESULTS
+==============================================================================
+
+------------------------------------------------------------------------------
+Friedman test: relevance
+------------------------------------------------------------------------------
+Subjects (evaluators) used: 9
+Conditions (algorithms): 8
+Chi-square (Q): 14.0197
+Degrees of freedom: 7
+Uncorrected p-value: 0.050833
+Kendall's W: 0.2225
+  -> interpreted as a small effect (rule of thumb, not a strict cutoff)
+
+------------------------------------------------------------------------------
+Friedman test: preference_score
+------------------------------------------------------------------------------
+Subjects (evaluators) used: 9
+Conditions (algorithms): 8
+Chi-square (Q): 23.6722
+Degrees of freedom: 7
+Uncorrected p-value: 0.001301
+Kendall's W: 0.3757
+  -> interpreted as a moderate effect (rule of thumb, not a strict cutoff)
+
+------------------------------------------------------------------------------
+Friedman test: novelty_score
+------------------------------------------------------------------------------
+Subjects (evaluators) used: 9
+Conditions (algorithms): 8
+Chi-square (Q): 19.2272
+Degrees of freedom: 7
+Uncorrected p-value: 0.007505
+Kendall's W: 0.3052
+  -> interpreted as a moderate effect (rule of thumb, not a strict cutoff)
+
+------------------------------------------------------------------------------
+Cochran's Q test: in_top5
+------------------------------------------------------------------------------
+Subjects (evaluators) used: 9
+Conditions (algorithms): 8
+Q statistic: 12.7719
+Degrees of freedom: 7
+Uncorrected p-value: 0.077864
+
+==============================================================================
+3. OMNIBUS TEST SUMMARY AND ACROSS-METRIC CORRECTION
+==============================================================================
+Holm correction applied across 4 omnibus tests.
+Post-hoc comparisons will be run only for metrics whose omnibus test remains significant after this correction.
+
+          metric        test  statistic  n_subjects kendalls_w    p_unc  p_corr_holm_across_metrics  significant
+       relevance    Friedman    14.0197           9     0.2225 0.050833                    0.101665        False
+preference_score    Friedman    23.6722           9     0.3757 0.001301                    0.005203         True
+   novelty_score    Friedman    19.2272           9     0.3052 0.007505                    0.022514         True
+         in_top5 Cochran's Q    12.7719           9        n/a 0.077864                    0.101665        False
+
+==============================================================================
+4. POST-HOC COMPARISONS
+==============================================================================
+
+------------------------------------------------------------------------------
+Post-hoc decision: relevance
+------------------------------------------------------------------------------
+No post-hoc tests were run because the Friedman omnibus result was not significant after across-metric Holm correction (corrected p = 0.101665).
+
+------------------------------------------------------------------------------
+Wilcoxon signed-rank post-hoc: preference_score (Holm-corrected)
+------------------------------------------------------------------------------
+                    A                     B   W_val  p_unc  p_corr     RBC   CLES  mean_difference  median_difference  n_pairs  n_nonzero  significant
+                  knn             subtitles  0.0000 0.0039  0.1094  1.0000 0.9321           1.4667             1.4000        9          9        False
+          castoverlap       weighted_hybrid  0.0000 0.0078  0.2109 -1.0000 0.2716          -0.6667            -0.4000        9          8        False
+          castoverlap                   knn  2.0000 0.0117  0.3047 -0.9111 0.1481          -0.9111            -1.0000        9          9        False
+            subtitles       weighted_hybrid  2.0000 0.0117  0.3047 -0.9111 0.1543          -1.2222            -0.8000        9          9        False
+     image_similarity             subtitles  0.0000 0.0156  0.3750  1.0000 0.8148           0.8889             0.4000        9          7        False
+image_text_similarity             subtitles  0.0000 0.0156  0.3750  1.0000 0.8210           1.0222             0.8000        9          7        False
+       genome_overlap                   knn  4.0000 0.0312  0.6875 -0.8222 0.2654          -0.6000            -0.8000        9          9        False
+       genome_overlap             subtitles  4.5000 0.0312  0.6875  0.8000 0.7840           0.8667             0.4000        9          9        False
+                  knn                  tmdb  5.0000 0.0391  0.7812  0.7778 0.8457           0.8667             1.2000        9          9        False
+     image_similarity                   knn  6.0000 0.0469  0.8906 -0.7333 0.2160          -0.5778            -0.4000        9          9        False
+     image_similarity       weighted_hybrid  1.5000 0.0938  1.0000 -0.8571 0.3642          -0.3333            -0.2000        9          6        False
+          castoverlap image_text_similarity  6.0000 0.1016  1.0000 -0.6667 0.3457          -0.4667            -0.4000        9          8        False
+       genome_overlap       weighted_hybrid  9.5000 0.1328  1.0000 -0.5778 0.3642          -0.3556            -0.2000        9          9        False
+                 tmdb       weighted_hybrid  5.0000 0.1562  1.0000 -0.6429 0.2654          -0.6222            -0.4000        9          7        False
+image_text_similarity                   knn  8.0000 0.1797  1.0000 -0.5556 0.2963          -0.4444            -0.4000        9          8        False
+            subtitles                  tmdb 11.0000 0.1914  1.0000 -0.5111 0.2778          -0.6000            -0.2000        9          9        False
+          castoverlap      image_similarity  8.0000 0.1953  1.0000 -0.5556 0.3765          -0.3333            -0.4000        9          8        False
+image_text_similarity                  tmdb  8.5000 0.2188  1.0000  0.5278 0.6296           0.4222             0.2000        9          8        False
+     image_similarity                  tmdb  3.0000 0.2500  1.0000  0.6000 0.6358           0.2889             0.0000        9          5        False
+                  knn       weighted_hybrid 10.0000 0.2969  1.0000  0.4444 0.6296           0.2444             0.4000        9          8        False
+          castoverlap        genome_overlap 13.5000 0.3164  1.0000 -0.4000 0.3889          -0.3111            -0.6000        9          9        False
+       genome_overlap                  tmdb 14.0000 0.3320  1.0000  0.3778 0.6049           0.2667             0.2000        9          9        False
+          castoverlap             subtitles 14.0000 0.3438  1.0000  0.3778 0.6914           0.5556             0.4000        9          9        False
+     image_similarity image_text_similarity  5.5000 0.3438  1.0000 -0.4762 0.4815          -0.1333             0.0000        9          6        False
+image_text_similarity       weighted_hybrid  8.5000 0.4219  1.0000 -0.3929 0.4383          -0.2000             0.0000        9          7        False
+          castoverlap                  tmdb 14.0000 0.6406  1.0000 -0.2222 0.5000          -0.0444            -0.2000        9          8        False
+       genome_overlap image_text_similarity 20.0000 0.8047  1.0000 -0.1111 0.4568          -0.1556            -0.4000        9          9        False
+       genome_overlap      image_similarity 17.5000 0.9844  1.0000  0.0278 0.4877          -0.0222             0.0000        9          8        False
+
+Significant pairs at alpha=0.05 (Holm-corrected): 0 / 28
+
+RBC is the matched-pairs rank-biserial correlation. Its sign is based on A minus B.
+CLES is the estimated probability that a randomly selected A score exceeds a randomly selected B score.
+
+------------------------------------------------------------------------------
+Wilcoxon signed-rank post-hoc: novelty_score (Holm-corrected)
+------------------------------------------------------------------------------
+                    A                     B   W_val  p_unc  p_corr     RBC   CLES  mean_difference  median_difference  n_pairs  n_nonzero  significant
+          castoverlap       weighted_hybrid  0.0000 0.0078  0.2188  1.0000 0.7037           0.3778             0.2000        9          8        False
+                  knn             subtitles  0.0000 0.0156  0.4219 -1.0000 0.0864          -0.8444            -0.8000        9          7        False
+          castoverlap                   knn  3.0000 0.0195  0.5078  0.8667 0.8210           0.5778             0.6000        9          9        False
+                  knn                  tmdb  3.0000 0.0195  0.5078 -0.8667 0.1728          -0.5778            -0.8000        9          9        False
+            subtitles       weighted_hybrid  4.0000 0.0234  0.5625  0.8222 0.8272           0.6444             0.8000        9          9        False
+image_text_similarity             subtitles  4.5000 0.0273  0.6289 -0.8000 0.2222          -0.6000            -0.8000        9          9        False
+       genome_overlap                   knn  4.0000 0.0312  0.6875  0.8222 0.7593           0.4222             0.4000        9          9        False
+     image_similarity             subtitles  2.5000 0.0625  1.0000 -0.8214 0.2469          -0.4667            -0.6000        9          7        False
+       genome_overlap             subtitles  7.5000 0.0859  1.0000 -0.6667 0.2160          -0.4222            -0.4000        9          9        False
+     image_similarity                   knn  4.0000 0.1094  1.0000  0.7143 0.7160           0.3778             0.6000        9          7        False
+                 tmdb       weighted_hybrid  0.0000 0.1250  1.0000  1.0000 0.6852           0.3778             0.0000        9          4        False
+          castoverlap image_text_similarity  5.5000 0.1719  1.0000  0.6071 0.6605           0.3333             0.2000        9          7        False
+image_text_similarity                  tmdb  5.5000 0.1719  1.0000 -0.6071 0.3333          -0.3333            -0.2000        9          7        False
+          castoverlap      image_similarity  6.0000 0.2031  1.0000  0.5714 0.6049           0.2000             0.2000        9          7        False
+       genome_overlap                  tmdb  4.0000 0.2188  1.0000 -0.6190 0.3827          -0.1556             0.0000        9          6        False
+       genome_overlap       weighted_hybrid  9.0000 0.2500  1.0000  0.5000 0.6296           0.2222             0.4000        9          8        False
+                  knn       weighted_hybrid 10.0000 0.3047  1.0000 -0.4444 0.3827          -0.2000            -0.2000        9          8        False
+            subtitles                  tmdb 10.0000 0.3047  1.0000  0.4444 0.6790           0.2667             0.2000        9          8        False
+     image_similarity image_text_similarity  2.5000 0.3125  1.0000  0.6667 0.5802           0.1333             0.0000        9          5        False
+          castoverlap             subtitles 14.0000 0.3438  1.0000 -0.3778 0.3272          -0.2667            -0.6000        9          9        False
+          castoverlap        genome_overlap 11.0000 0.4219  1.0000  0.3889 0.5988           0.1556             0.2000        9          8        False
+       genome_overlap image_text_similarity 15.0000 0.4258  1.0000  0.3333 0.5679           0.1778             0.4000        9          9        False
+image_text_similarity                   knn 12.0000 0.4375  1.0000  0.3333 0.6481           0.2444             0.4000        9          8        False
+     image_similarity                  tmdb  6.0000 0.4688  1.0000 -0.4286 0.4012          -0.2000             0.0000        9          6        False
+     image_similarity       weighted_hybrid  1.5000 0.7500  1.0000  0.5000 0.5988           0.1778             0.0000        9          3        False
+          castoverlap                  tmdb 15.0000 0.7969  1.0000  0.1667 0.5000           0.0000             0.2000        9          8        False
+image_text_similarity       weighted_hybrid  6.5000 0.8750  1.0000 -0.1333 0.5000           0.0444             0.0000        9          5        False
+       genome_overlap      image_similarity 17.0000 0.9375  1.0000  0.0556 0.5185           0.0444             0.2000        9          8        False
+
+Significant pairs at alpha=0.05 (Holm-corrected): 0 / 28
+
+RBC is the matched-pairs rank-biserial correlation. Its sign is based on A minus B.
+CLES is the estimated probability that a randomly selected A score exceeds a randomly selected B score.
+
+------------------------------------------------------------------------------
+Post-hoc decision: in_top5
+------------------------------------------------------------------------------
+No post-hoc tests were run because the Cochran's Q omnibus result was not significant after across-metric Holm correction (corrected p = 0.101665).
+
+==============================================================================
+5. DESCRIPTIVE MEANS PER ALGORITHM
+==============================================================================
+
+------------------------------------------------------------------------------
+relevance
+------------------------------------------------------------------------------
+                  algorithm  mean_relevance
+rank                                       
+1           weighted_hybrid          3.6667
+2            genome_overlap          3.4667
+3     image_text_similarity          3.4667
+4          image_similarity          3.4000
+5                       knn          3.3333
+6               castoverlap          3.0222
+7                      tmdb          2.9778
+8                 subtitles          2.8444
+
+------------------------------------------------------------------------------
+preference_score
+------------------------------------------------------------------------------
+                  algorithm  mean_preference_score
+rank                                              
+1                       knn                 3.8889
+2           weighted_hybrid                 3.6444
+3     image_text_similarity                 3.4444
+4          image_similarity                 3.3111
+5            genome_overlap                 3.2889
+6                      tmdb                 3.0222
+7               castoverlap                 2.9778
+8                 subtitles                 2.4222
+
+------------------------------------------------------------------------------
+novelty_score
+------------------------------------------------------------------------------
+                  algorithm  mean_novelty_score
+rank                                           
+1                 subtitles              1.6889
+2               castoverlap              1.4222
+3                      tmdb              1.4222
+4            genome_overlap              1.2667
+5          image_similarity              1.2222
+6     image_text_similarity              1.0889
+7           weighted_hybrid              1.0444
+8                       knn              0.8444
+
+------------------------------------------------------------------------------
+in_top5
+------------------------------------------------------------------------------
+                  algorithm  mean_in_top5
+rank                                     
+1                       knn        1.0000
+2          image_similarity        0.7778
+3     image_text_similarity        0.7778
+4           weighted_hybrid        0.7778
+5            genome_overlap        0.6667
+6               castoverlap        0.5556
+7                      tmdb        0.4444
+8                 subtitles        0.3333
+
+==============================================================================
+DONE
+==============================================================================
+Full report written to: /app/evaluation_results/statistical_comparison_report.txt

@@ -21,6 +21,15 @@ staticfiles/
 dataset/**
 !dataset/README.md
 
+# Jupyter
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+.jupyter/
+.ipython/
+
+# Generated evaluation results
+evaluation_results/evaluation_outputs/
+
 # PyCharm
 .idea/
 
@@ -38,11 +47,12 @@ node_modules/
 # Sass cache
 .sass-cache/
 
-# Ignore Embeddings
+# Ignore embeddings
 apps/recommender/embeddings/**/movie_embeddings.npy
 apps/recommender/embeddings/**/movie_ids.json
-
 apps/recommender/embeddings/movie_overlaps_lookup.pkl
-apps/recommender/embeddings/subtitles_models
-/static/models
-/apps/recommender/embeddings/item_knn
+apps/recommender/embeddings/subtitles_models/
+apps/recommender/embeddings/item_knn/
+
+# Static models
+static/models/

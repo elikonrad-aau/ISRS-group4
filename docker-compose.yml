@@ -12,6 +12,29 @@ services:
     depends_on:
       - db
 
+  notebook:
+    build: .
+    container_name: django_notebook
+    working_dir: /app/evaluation_results
+    command:
+      - python
+      - -m
+      - jupyter
+      - lab
+      - --ip=0.0.0.0
+      - --port=8888
+      - --no-browser
+      - --allow-root
+      - --ServerApp.root_dir=/app/evaluation_results
+    volumes:
+      - .:/app
+    ports:
+      - "127.0.0.1:8888:8888"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
   db:
     image: postgres:16
     container_name: django_db
