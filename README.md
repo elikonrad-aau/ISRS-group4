@@ -19,7 +19,7 @@ docker compose exec web python manage.py migrate
 
 4. Restore Database from dump in `root` folder 
 ```bash
-docker compose exec -T db psql -U postgres -d app < db_dump.sql
+docker compose exec -T db pg_restore -U postgres -d app --verbose < app_full.dump
 ```
 
 5. Download embeddings folder and place it in apps/recommender/embeddings
