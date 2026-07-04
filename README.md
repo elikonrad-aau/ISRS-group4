@@ -17,10 +17,12 @@ docker compose up --build -d
 docker compose exec web python manage.py migrate
 ```
 
-4. Restore Database from dump in `root` folder – Download from: https://drive.google.com/drive/folders/1d023Ph-vgjgNFjDr7sQCIrq2LfBkPS6x?usp=sharing
+4. Restore Database from dump in `root` folder 
 ```bash
-docker compose exec -T db psql -U postgres -d app < db_dump.sql
+docker compose exec -T db pg_restore -U postgres -d app --verbose < app_full.dump
 ```
+
+5. Download embeddings folder and place it in apps/recommender/embeddings
 
 5. Open:
 ```text
@@ -28,12 +30,12 @@ http://127.0.0.1:8000
 ```
 
 
-# Algorithm Ideas (not covered in the course)
+# Algorithms
 ## Function 0: Baseline (TMDB API)
 using the recommendations from the TMDB API as a baseline for the other recommendations – requested via the API and filtered to only show movies existing in the dataset.
 For this, a tmdb account is necessary (for API token)
 
-## Function 1: Collaborative Filtering (Item-Item kNN)
+## Function 1: Collaborative Filtering
 finding the highest rated movies among all users that gave the reference movie the highest rating
 1. use the data from the movies.csv and rating.csv to (pre-)calculate the nearest neighbor
    Creates a sparse matrix where rows represent users, columns represent movies, and values are the ratings. Each movie becomes a vector of how all users rated it.
@@ -71,5 +73,3 @@ Takes the ranks from each recommender and sorts them by their ranks across recom
 ## "Function 7": Collection
 If the reference movie is in a collection, these movies will be excluded from our custom algorithms.
 However, there will be a section at the bottom of the page featuring all movies from the same collection so that the user can make sure that he/she has seen all of them already.
-
-# Evaluation Ideas
